@@ -1,0 +1,12 @@
+type_angle
+type_area
+type_currency
+type_energy
+type_force
+type_length
+type_mass
+type_pressure
+type_speed
+type_temperature
+type_time
+type_volume

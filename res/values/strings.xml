@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MainActivity</string>
+    <string name="length">Length</string>
+    <string name="cat_length">Length</string>
+    <string name="cat_additional_length">Length</string>
+    <string name="meters">meters</string>
+    <string name="meters_abbrev">m</string>
+    <!--XXX-->
 </resources>
