@@ -14,4 +14,5 @@ public class MainActivity extends Activity
     }
     String s;
     /** Test comment. **/
+    /**Hello, world!. **/
 }
