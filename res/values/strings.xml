@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MainActivity</string>
+
+    <!--Unit categories-->
     <string name="length">Length</string>
-    <string name="cat_length">Length</string>
-    <string name="cat_additional_length">Length</string>
+
+    <!--Unit names and abbreviations-->
     <string name="meters">meters</string>
-    <string name="meters_abbrev">m</string>
-    <!--XXX-->
+    <string name="meters.abbrev">m</string>
+
+    <!--TODO-->
 </resources>
