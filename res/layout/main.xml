@@ -4,10 +4,24 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="Hello World, MainActivity"
-    />
+
+    <Button
+        android:id="@+id/currency_button"
+        android:layout_width="297dp"
+        android:layout_height="wrap_content"
+        android:text="@string/currency_button_name" />
+
+    <Button
+        android:id="@+id/units_button"
+        android:layout_width="297dp"
+        android:layout_height="wrap_content"
+        android:text="@string/units_button_name" />
+
+    <Button
+        android:id="@+id/calculator_button"
+        android:layout_width="293dp"
+        android:layout_height="wrap_content"
+        android:text="@string/calculator_button" />
+
 </LinearLayout>
 

@@ -8,6 +8,11 @@
     <!--Unit names and abbreviations-->
     <string name="meters">meters</string>
     <string name="meters.abbrev">m</string>
+    
+    <!-- Button labels -->
+    <string name="currency_button_name">Currency</string>
+    <string name="units_button_name">Units</string>
+    <string name="calculator_button">Calculator</string>
 
     <!--TODO-->
 </resources>
