@@ -13,4 +13,4 @@ public class ExchangeRate {
 		this.usd_equivalent = usd_equivalent;
 		this.last_updated = last_updated;
 	}
-};
+}
