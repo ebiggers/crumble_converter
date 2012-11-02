@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Crumble Converter</string>
 
     <!--Unit categories-->
     <string name="length">Length</string>
+    <!--TODO-->
 
     <!--Unit names and abbreviations-->
     <string name="meters">meters</string>
@@ -14,5 +14,11 @@
     <string name="units_button_name">Units</string>
     <string name="calculator_button">Calculator</string>
 
-    <!--TODO-->
+    <!--Application labels (see AndroidManifest.xml) -->
+    <string name="app_name">Crumble Converter</string>
+    <string name="currency_converter_title">Currency</string>
+    <string name="unit_category_chooser_title">Unit Categories</string>
+    <string name="unit_converter_title">Units</string>
+    <string name="calculator_title">Calculator</string>
+
 </resources>
