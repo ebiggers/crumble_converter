@@ -60,7 +60,7 @@ public class CurrencyConverterActivity extends Activity
 				name = abbrev;
 			} else {
 				try {
-					name = abbrev + "(" + resources.getString(id) + ")";
+					name = abbrev + " (" + resources.getString(id) + ")";
 				} catch (Resources.NotFoundException e) {
 					Log.w(TAG, "Cannot find full name for currency " + abbrev, e);
 					name = abbrev;
@@ -106,8 +106,6 @@ public class CurrencyConverterActivity extends Activity
 	}
 
 	private void do_conversion() {
-
-		Log.d(TAG, "Entering do_conversion()");
 		assert(from_exchange_rate != null && to_exchange_rate != null);
 		assert(from_currency_idx != -1 && to_currency_idx != -1);
 		assert(from_exchange_rate.abbrev.equals(currency_abbrevs[from_currency_idx])
@@ -139,7 +137,6 @@ public class CurrencyConverterActivity extends Activity
 			result = Double.toString(new_amount);
 		}
 		setConversionOutput(result);
-		Log.d(TAG, "Leaving do_conversion()");
 	}
 
 	private void maybe_do_outdated_conversion() {

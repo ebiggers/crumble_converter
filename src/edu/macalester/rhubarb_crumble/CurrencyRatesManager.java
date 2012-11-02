@@ -1,7 +1,9 @@
 package edu.macalester.rhubarb_crumble;
 
 import android.content.Context;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -59,9 +61,10 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 	private Handler handler;
 	private Handler activity_handler;
 	private SQLiteDatabase db;
+	private CurrencyDBOpenHelper db_helper;
 
 	private static class CurrencyDBOpenHelper extends SQLiteOpenHelper {
-		private static final int DATABASE_VERSION = 1;
+		private static final int DATABASE_VERSION = 4;
 		private static final String DATABASE_NAME = "currencies.db";
 		private static final String CURRENCY_TABLE = "currency";
 		CurrencyDBOpenHelper(Context context) {
@@ -103,8 +106,8 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 	}
 
 	public void finalize() {
-		if (this.db != null)
-			this.db.close();
+		if (this.db_helper != null)
+			this.db_helper.close();
 	}
 
 	public Handler getHandler() {
@@ -211,26 +214,33 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 	}
 
     private void update_db(Map<String, ExchangeRate> exchange_rates,
-                           SQLiteDatabase db) {
-        for (Map.Entry<String, ExchangeRate> entry : exchange_rates.entrySet()) {
-            String abbrev = entry.getKey();
-            ExchangeRate r = entry.getValue();
-            try {
-                if (r.is_in_db) {
-                    db.execSQL("UPDATE currency SET usd_equivalent=" +
-                                r.usd_equivalent + ", last_updated=" +
-                                r.last_updated + " WHERE " +
-                                "abbreviation = '" + abbrev + "';");
-                } else {
-                    db.execSQL("INSERT INTO currency VALUES ("
-                               + "'" + abbrev + "', " +
-                               r.usd_equivalent + ", " +
-                               r.last_updated + ");");
-                }
-            } catch (SQLiteException e) {
-                Log.e(TAG, "Error updating exchange rate database", e);
+                           SQLiteDatabase db)
+	{
+		DatabaseUtils.InsertHelper ih = new DatabaseUtils.InsertHelper(db, "currency");
+		final int abbreviation_col = ih.getColumnIndex("abbreviation");
+		final int usd_equivalent_col = ih.getColumnIndex("usd_equivalent");
+		final int last_updated_col = ih.getColumnIndex("last_updated");
+
+		try {
+			db.beginTransaction();
+			for (Map.Entry<String, ExchangeRate> entry : exchange_rates.entrySet()) {
+				String abbrev = entry.getKey();
+				ExchangeRate r = entry.getValue();
+				ih.prepareForInsert();
+				ih.bind(abbreviation_col, abbrev);
+				ih.bind(usd_equivalent_col, r.usd_equivalent);
+				ih.bind(last_updated_col, r.last_updated);
+
+				Log.d(TAG, "Insert: (abbreviation = " + abbrev + ", usd_equivalent = " +
+							r.usd_equivalent + ", last_updated = " + r.last_updated + ")");
+
+				ih.execute();
             }
-        }
+			db.setTransactionSuccessful();
+			db.endTransaction();
+        } catch (SQLiteException e) {
+			Log.e(TAG, "Error updating exchange rate database", e);
+		}
     }
 
 	private void download_and_update_rates() {
@@ -256,6 +266,8 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 				Log.d(TAG, "No exchange rates are more than " +
 						   SECONDS_PER_AUTOMATIC_UPDATE + " seconds old");
 			}
+			Log.d(TAG, "Sending message MSG_TIME_TO_DOWNLOAD in " +
+					SECONDS_PER_AUTOMATIC_UPDATE + " seconds");
 			nmsg = Message.obtain();
 			nmsg.what = MSG_TIME_TO_DOWNLOAD;
 			nmsg.arg1 = msg.arg1;
@@ -293,6 +305,8 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 			r.abbrev = currency_abbrev;
 			nmsg.arg1 = msg.arg1;
 			nmsg.obj = r;
+			Log.d(TAG, "Sending message MSG_HAVE_CURRENCY_RATE (" +
+						currency_abbrev + ")");
 			activity_handler.sendMessage(nmsg);
 			break;
 		}
@@ -302,22 +316,20 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 	public void run() {
 		synchronized(this.thread_started_cond) {
 			Looper.prepare();
-			handler = new Handler(this);
+			this.handler = new Handler(this);
 			this.thread_started = true;
-			thread_started_cond.notify();
+			this.thread_started_cond.notify();
 		}
 		this.exchange_rates = new HashMap<String, ExchangeRate>();
-		for (int i = 0; i < currency_abbreviations.length; i++) {
-			this.exchange_rates.put(currency_abbreviations[i],
+		for (int i = 0; i < this.currency_abbreviations.length; i++) {
+			this.exchange_rates.put(this.currency_abbreviations[i],
 									new ExchangeRate());
 		}
 		try {
 			Log.d(TAG, "Creating CurrencyDBOpenHelper");
-			CurrencyDBOpenHelper helper = new CurrencyDBOpenHelper(ctx);
+			this.db_helper = new CurrencyDBOpenHelper(ctx);
 			Log.d(TAG, "Calling SQLiteOpenHelper.getWritableDatabase()");
-			this.db = helper.getWritableDatabase();
-			// XXX remove DELETE * later
-			//db.execSQL("DELETE FROM currency;");
+			this.db = this.db_helper.getWritableDatabase();
 			load_rates_from_db(this.db);
 		} catch (Exception e) {
 			Log.e(TAG, "Error opening, creating, or reading database", e);
