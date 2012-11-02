@@ -64,7 +64,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 	private CurrencyDBOpenHelper db_helper;
 
 	private static class CurrencyDBOpenHelper extends SQLiteOpenHelper {
-		private static final int DATABASE_VERSION = 4;
+		private static final int DATABASE_VERSION = 5;
 		private static final String DATABASE_NAME = "currencies.db";
 		private static final String CURRENCY_TABLE = "currency";
 		CurrencyDBOpenHelper(Context context) {
@@ -74,12 +74,12 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE currency (abbreviation CHAR(3), "
-						+ "usd_equivalent DOUBLE, last_updated BIGINT);");
+						+ "usd_equivalent DOUBLE, last_updated BIGINT)");
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			db.execSQL("DROP TABLE IF EXISTS currency;");
+			db.execSQL("DROP TABLE IF EXISTS currency");
 			onCreate(db);
 		}
 	};
@@ -120,7 +120,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 
 	private void load_rates_from_db(SQLiteDatabase db) {
 		//Cursor cur = db.query("currency", null, null, null, null, null, null);
-		Cursor cur = db.rawQuery("SELECT * FROM currency;", null);
+		Cursor cur = db.rawQuery("SELECT * FROM currency", null);
 		if (cur.moveToFirst()) {
 			int count = cur.getCount();
 			Log.i(TAG, "Loading " + count + " exchange rates from local SQLite database");
@@ -135,6 +135,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
                       ", " + last_updated + ")");
 				ExchangeRate r = new ExchangeRate(usd_equivalent, last_updated, true);
 				exchange_rates.put(abbreviation, r);
+				cur.moveToNext();
 			}
 		} else {
 			Log.i(TAG, "No currency exchange rates found in local SQLite database!");
