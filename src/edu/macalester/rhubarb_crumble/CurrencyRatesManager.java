@@ -1,23 +1,27 @@
 package edu.macalester.rhubarb_crumble;
+
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteException;
-import android.content.Context;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class CurrencyRatesManager implements java.lang.Runnable {
+public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callback {
 	private final String[] currency_abbreviations = {
 		"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN",
 		"BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL",
@@ -43,13 +47,18 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 	private static final int URL_CONNECTION_CONNECT_TIMEOUT_MILLISECONDS = 3000;
 	private static final int URL_CONNECTION_READ_TIMEOUT_MILLISECONDS = 3000;
 	private static final String TAG = "CurrencyRatesManager";
-	private static final String ACTIVITY_TAG = "CurrencyConverterActivity";
+
+	public static final int MSG_TIME_TO_DOWNLOAD = 0;
+	public static final int MSG_NEED_CURRENCY_RATE = 1;
+	public static final int MSG_HAVE_CURRENCY_RATE = 2;
 
 	private Map<String, ExchangeRate> exchange_rates;
 	private Context ctx;
 	private boolean thread_started;
     private Object thread_started_cond;
-	private boolean update_done;
+	private Handler handler;
+	private Handler activity_handler;
+	private SQLiteDatabase db;
 
 	private static class CurrencyDBOpenHelper extends SQLiteOpenHelper {
 		private static final int DATABASE_VERSION = 1;
@@ -72,10 +81,11 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 		}
 	};
 
-	public CurrencyRatesManager(Context ctx) {
+	public CurrencyRatesManager(Context ctx, Handler activity_handler) {
 		this.ctx = ctx;
 		this.thread_started = false;
         this.thread_started_cond = new Object();
+		this.activity_handler = activity_handler;
 		synchronized(thread_started_cond) {
 			new java.lang.Thread(this).start();
 			while (!this.thread_started) {
@@ -87,55 +97,22 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 				}
 			}
 		}
+		Message msg = Message.obtain();
+		msg.what = MSG_TIME_TO_DOWNLOAD;
+		this.handler.sendMessage(msg);
+	}
+
+	public void finalize() {
+		if (this.db != null)
+			this.db.close();
+	}
+
+	public Handler getHandler() {
+		return this.handler;
 	}
 
 	public final String[] getCurrencyAbbreviations() {
 		return currency_abbreviations;
-	}
-
-	public ExchangeRate getExchangeRate(String currency_abbrev) {
-		ExchangeRate r;
-		long now = new Date().getTime();
-		long outdated_time;
-		Log.d(ACTIVITY_TAG, "Getting exchange rate for currency " + currency_abbrev);
-		synchronized(this) {
-			r = exchange_rates.get(currency_abbrev);
-			if ((now - r.last_updated) / 1000 >= SECONDS_PER_AUTOMATIC_UPDATE) {
-				Log.d(ACTIVITY_TAG, "Exchange rate for " + currency_abbrev +
-									" is out of date " + "by " +
-									(now - r.last_updated) / 1000 + " seconds!");
-				outdated_time = r.last_updated;
-				r = null;
-				update_done = false;
-				this.notify();
-
-				while (!update_done) {
-					try {
-						Log.d(ACTIVITY_TAG, "Waiting for currency rates to be downloaded...");
-						this.wait();
-					} catch (InterruptedException e) {
-					}
-				}
-				r = exchange_rates.get(currency_abbrev);
-				r.is_outdated = r.last_updated == outdated_time;
-				if (r.is_outdated)
-					Log.d(ACTIVITY_TAG, "Exchange rate for " + currency_abbrev +
-										" is still outdated!");
-				else
-					Log.d(ACTIVITY_TAG, "Exchange rate for " + currency_abbrev +
-										" was updated");
-			} else {
-				Log.d(ACTIVITY_TAG, "Exchange rate for " + currency_abbrev +
-									" is up to date");
-				r.is_outdated = false;
-			}
-		}
-		if (r.last_updated == 0) {
-			Log.w(ACTIVITY_TAG, "No exchange rate available for " + currency_abbrev);
-			return null;
-		} else {
-			return r;
-		}
 	}
 
 	private void load_rates_from_db(SQLiteDatabase db) {
@@ -159,6 +136,7 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 		} else {
 			Log.i(TAG, "No currency exchange rates found in local SQLite database!");
 		}
+		cur.close();
 	}
 
 	private void download_rates() throws MalformedURLException, IOException {
@@ -255,53 +233,96 @@ public class CurrencyRatesManager implements java.lang.Runnable {
         }
     }
 
-	public void run() {
-		synchronized(this) {
-            synchronized(this.thread_started_cond) {
-                this.thread_started = true;
-                thread_started_cond.notify();
-            }
-			this.exchange_rates = new HashMap<String, ExchangeRate>();
-			for (int i = 0; i < currency_abbreviations.length; i++) {
-				this.exchange_rates.put(currency_abbreviations[i],
-										new ExchangeRate());
+	private void download_and_update_rates() {
+		try {
+			download_rates();
+			if (this.db != null)
+				update_db(this.exchange_rates, this.db);
+		} catch (Exception e) {
+			Log.e(TAG, "Error downloading currency exchange rates", e);
+		}
+	}
+
+	public boolean handleMessage(Message msg) {
+		Message nmsg;
+		switch (msg.what) {
+		case MSG_TIME_TO_DOWNLOAD:
+			Log.d(TAG, "Received message MSG_TIME_TO_DOWNLOAD");
+			if (any_rates_outdated()) {
+				Log.d(TAG, "One or more exchange rates is more than " +
+					  SECONDS_PER_AUTOMATIC_UPDATE + " seconds old");
+				download_and_update_rates();
+			} else {
+				Log.d(TAG, "No exchange rates are more than " +
+						   SECONDS_PER_AUTOMATIC_UPDATE + " seconds old");
 			}
+			nmsg = Message.obtain();
+			nmsg.what = MSG_TIME_TO_DOWNLOAD;
+			nmsg.arg1 = msg.arg1;
+			this.handler.sendMessageDelayed(nmsg, SECONDS_PER_AUTOMATIC_UPDATE * 1000);
+			break;
+		case MSG_NEED_CURRENCY_RATE:
+			Log.d(TAG, "Received message MSG_NEED_CURRENCY_RATE");
+			String currency_abbrev = (String)msg.obj;
+			long now = new Date().getTime();
+			Log.d(TAG, "Getting exchange rate for currency " + currency_abbrev);
+			ExchangeRate r = exchange_rates.get(currency_abbrev);
+			if ((now - r.last_updated) / 1000 >= SECONDS_PER_AUTOMATIC_UPDATE) {
+				Log.d(TAG, "Exchange rate for " + currency_abbrev +
+						   " is out of date " + "by " +
+						   (now - r.last_updated) / 1000 + " seconds!");
+				long outdated_time = r.last_updated;
+
+				download_and_update_rates();
+
+				r = exchange_rates.get(currency_abbrev);
+				r.is_outdated = r.last_updated == outdated_time;
+				if (r.is_outdated)
+					Log.d(TAG, "Exchange rate for " + currency_abbrev +
+							   " is still outdated!");
+				else
+					Log.d(TAG, "Exchange rate for " + currency_abbrev +
+							   " was updated");
+			} else {
+				Log.d(TAG, "Exchange rate for " + currency_abbrev +
+						   " is up to date");
+				r.is_outdated = false;
+			}
+			nmsg = Message.obtain();
+			nmsg.what = MSG_HAVE_CURRENCY_RATE;
+			r.abbrev = currency_abbrev;
+			nmsg.arg1 = msg.arg1;
+			nmsg.obj = r;
+			activity_handler.sendMessage(nmsg);
+			break;
+		}
+		return true;
+	}
+
+	public void run() {
+		synchronized(this.thread_started_cond) {
+			Looper.prepare();
+			handler = new Handler(this);
+			this.thread_started = true;
+			thread_started_cond.notify();
+		}
+		this.exchange_rates = new HashMap<String, ExchangeRate>();
+		for (int i = 0; i < currency_abbreviations.length; i++) {
+			this.exchange_rates.put(currency_abbreviations[i],
+									new ExchangeRate());
+		}
+		try {
 			Log.d(TAG, "Creating CurrencyDBOpenHelper");
 			CurrencyDBOpenHelper helper = new CurrencyDBOpenHelper(ctx);
-			SQLiteDatabase db;
-			try {
-				Log.d(TAG, "Calling SQLiteOpenHelper.getWritableDatabase()");
-				db = helper.getWritableDatabase();
-				load_rates_from_db(db);
-			} catch (Exception e) {
-				Log.e(TAG, "Error opening database", e);
-				return;
-			}
-
-			while (true) {
-				if (any_rates_outdated()) {
-					Log.d(TAG, "One or more exchange rates is more than " +
-						  SECONDS_PER_AUTOMATIC_UPDATE + " seconds old");
-					try {
-						download_rates();
-                        update_db(exchange_rates, db);
-					} catch (Exception e) {
-						Log.e(TAG, "Error downloading currency exchange rates", e);
-					}
-					this.update_done = true;
-					this.notify();
-				} else {
-					Log.d(TAG, "No exchange rates are more than " +
-							   SECONDS_PER_AUTOMATIC_UPDATE + " seconds old");
-				}
-				try {
-					Log.d(TAG, "Sleeping for at most " + SECONDS_PER_AUTOMATIC_UPDATE +
-							   " seconds");
-					this.wait(SECONDS_PER_AUTOMATIC_UPDATE * 1000);
-				} catch (InterruptedException e) {
-                    Log.e(TAG, "Thread interrupted!");
-				}
-			}
+			Log.d(TAG, "Calling SQLiteOpenHelper.getWritableDatabase()");
+			this.db = helper.getWritableDatabase();
+			// XXX remove DELETE * later
+			//db.execSQL("DELETE FROM currency;");
+			load_rates_from_db(this.db);
+		} catch (Exception e) {
+			Log.e(TAG, "Error opening, creating, or reading database", e);
+			this.db = null;
 		}
+		Looper.loop();
 	}
 }
