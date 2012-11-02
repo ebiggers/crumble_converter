@@ -16,6 +16,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		/** Set onClickListeners for the three buttons on the main screen. */
 		View currencyButton = findViewById(R.id.currency_button);
+		assert currencyButton != null;
 		currencyButton.setOnClickListener(this);
 
 		View unitsButton = findViewById(R.id.units_button);

@@ -37,17 +37,19 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 		"UZS", "VEF", "VND", "VUV", "WST", "XAF", "XCD", "XDR", "XOF", "XPF",
 		"YER", "ZAR", "ZMK", "ZWD",
 	};
+
 	private static final int SECONDS_PER_AUTOMATIC_UPDATE = 3600;
 	private static final String YAHOO_URL = "http://download.finance.yahoo.com/d/quotes.csv";
 	private static final int URL_CONNECTION_CONNECT_TIMEOUT_MILLISECONDS = 3000;
 	private static final int URL_CONNECTION_READ_TIMEOUT_MILLISECONDS = 3000;
 	private static final String TAG = "CurrencyRatesManager";
+	private static final String ACTIVITY_TAG = "CurrencyConverterActivity";
 
 	private Map<String, ExchangeRate> exchange_rates;
 	private Context ctx;
 	private boolean thread_started;
+    private Object thread_started_cond;
 	private boolean update_done;
-	private Object update_done_lock;
 
 	private static class CurrencyDBOpenHelper extends SQLiteOpenHelper {
 		private static final int DATABASE_VERSION = 1;
@@ -73,29 +75,35 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 	public CurrencyRatesManager(Context ctx) {
 		this.ctx = ctx;
 		this.thread_started = false;
-		this.update_done_lock = new Object();
-		synchronized(this) {
+        this.thread_started_cond = new Object();
+		synchronized(thread_started_cond) {
 			new java.lang.Thread(this).start();
 			while (!this.thread_started) {
 				try {
-					this.wait();
+                    Log.d(TAG, "Waiting for CurrencyRatesManager thread to start...");
+					thread_started_cond.wait();
+                    Log.d(TAG, "CurrencyRatesManager thread has been started.");
 				} catch (InterruptedException e) {
 				}
 			}
 		}
 	}
 
+	public final String[] getCurrencyAbbreviations() {
+		return currency_abbreviations;
+	}
 
 	public ExchangeRate getExchangeRate(String currency_abbrev) {
 		ExchangeRate r;
 		long now = new Date().getTime();
 		long outdated_time;
-		Log.d(TAG, "Getting exchange rate for currency " + currency_abbrev);
+		Log.d(ACTIVITY_TAG, "Getting exchange rate for currency " + currency_abbrev);
 		synchronized(this) {
 			r = exchange_rates.get(currency_abbrev);
-			if (now - r.last_updated >= SECONDS_PER_AUTOMATIC_UPDATE) {
-				Log.d(TAG, "Exchange rate for " + currency_abbrev + " is out of date" +
-						   "by " + (now - r.last_updated) + " seconds!");
+			if ((now - r.last_updated) / 1000 >= SECONDS_PER_AUTOMATIC_UPDATE) {
+				Log.d(ACTIVITY_TAG, "Exchange rate for " + currency_abbrev +
+									" is out of date " + "by " +
+									(now - r.last_updated) / 1000 + " seconds!");
 				outdated_time = r.last_updated;
 				r = null;
 				update_done = false;
@@ -103,24 +111,27 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 
 				while (!update_done) {
 					try {
-						Log.d(TAG, "Waiting for currency rates to be downloaded...");
-						update_done_lock.wait();
+						Log.d(ACTIVITY_TAG, "Waiting for currency rates to be downloaded...");
+						this.wait();
 					} catch (InterruptedException e) {
 					}
 				}
 				r = exchange_rates.get(currency_abbrev);
 				r.is_outdated = r.last_updated == outdated_time;
 				if (r.is_outdated)
-					Log.d(TAG, "Exchange rate for " + currency_abbrev + " is still outdated!");
+					Log.d(ACTIVITY_TAG, "Exchange rate for " + currency_abbrev +
+										" is still outdated!");
 				else
-					Log.d(TAG, "Exchange rate for " + currency_abbrev + " was updated");
+					Log.d(ACTIVITY_TAG, "Exchange rate for " + currency_abbrev +
+										" was updated");
 			} else {
-				Log.d(TAG, "Exchange rate for " + currency_abbrev + " is up to date");
+				Log.d(ACTIVITY_TAG, "Exchange rate for " + currency_abbrev +
+									" is up to date");
 				r.is_outdated = false;
 			}
 		}
 		if (r.last_updated == 0) {
-			Log.w(TAG, "No exchange rate available for " + currency_abbrev);
+			Log.w(ACTIVITY_TAG, "No exchange rate available for " + currency_abbrev);
 			return null;
 		} else {
 			return r;
@@ -140,7 +151,9 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 				String abbreviation = cur.getString(abbreviation_idx);
 				double usd_equivalent = cur.getDouble(usd_equivalent_idx);
 				long last_updated = cur.getLong(last_updated_idx);
-				ExchangeRate r = new ExchangeRate(usd_equivalent, last_updated);
+                Log.d(TAG, "Loaded (" + abbreviation + ", " + usd_equivalent +
+                      ", " + last_updated + ")");
+				ExchangeRate r = new ExchangeRate(usd_equivalent, last_updated, true);
 				exchange_rates.put(abbreviation, r);
 			}
 		} else {
@@ -164,11 +177,13 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 		BufferedReader in = new BufferedReader(
 								new InputStreamReader(
 										connection.getInputStream()));
+		Log.d(TAG, "Created BufferedReader to read from HttpURLConnection");
 		long now = new Date().getTime();
-		Pattern pat = Pattern.compile("^\\s*([A-Z]{3})USD=X\\s*,\\s*[^\\s,]+)\\s*$");
+		Pattern pat = Pattern.compile("^\\s*\"?([A-Z]{3})USD=X\"?\\s*,\\s*([^\\s,]+)\\s*$");
 		long num_rates = 0;
 		String line;
 		while ((line = in.readLine()) != null) {
+			//Log.d(TAG, line);
 			Matcher m = pat.matcher(line);
 			if (m.matches()) {
 				String abbrev = m.group(1);
@@ -180,8 +195,9 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 							   "\" from line \"" + line + "\"");
 					continue;
 				}
-				if (exchange_rates.containsKey(abbrev)) {
-					exchange_rates.put(abbrev, new ExchangeRate(usd_equivalent, now));
+				ExchangeRate r;
+				if ((r = exchange_rates.get(abbrev)) != null) {
+					exchange_rates.put(abbrev, new ExchangeRate(usd_equivalent, now, r.is_in_db));
 					num_rates++;
 				} else {
 					Log.w(TAG, "Unknown currency abbreviation \"" + abbrev + "\"");
@@ -197,15 +213,54 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 	private boolean any_rates_outdated() {
 		long now = new Date().getTime();
 		long oldest_update = now;
-		for (ExchangeRate r : exchange_rates.values())
-			oldest_update = Math.min(r.last_updated, oldest_update);
-		return (now - oldest_update >= SECONDS_PER_AUTOMATIC_UPDATE);
+        String oldest = null;
+		for (Map.Entry<String, ExchangeRate> entry : exchange_rates.entrySet()) {
+            String s = entry.getKey();
+            ExchangeRate r = entry.getValue();
+            if (r.last_updated < oldest_update) {
+                oldest_update = r.last_updated;
+                oldest = s;
+            }
+        }
+        if (oldest == null || now - oldest_update <=
+                              1000 * SECONDS_PER_AUTOMATIC_UPDATE) {
+            return false;
+        } else {
+            Log.d(TAG, "Exchange rate of " + oldest + " is more than " +
+                  (now - oldest_update) / 1000 + " seconds old");
+            return true;
+        }
 	}
+
+    private void update_db(Map<String, ExchangeRate> exchange_rates,
+                           SQLiteDatabase db) {
+        for (Map.Entry<String, ExchangeRate> entry : exchange_rates.entrySet()) {
+            String abbrev = entry.getKey();
+            ExchangeRate r = entry.getValue();
+            try {
+                if (r.is_in_db) {
+                    db.execSQL("UPDATE currency SET usd_equivalent=" +
+                                r.usd_equivalent + ", last_updated=" +
+                                r.last_updated + " WHERE " +
+                                "abbreviation = '" + abbrev + "';");
+                } else {
+                    db.execSQL("INSERT INTO currency VALUES ("
+                               + "'" + abbrev + "', " +
+                               r.usd_equivalent + ", " +
+                               r.last_updated + ");");
+                }
+            } catch (SQLiteException e) {
+                Log.e(TAG, "Error updating exchange rate database", e);
+            }
+        }
+    }
 
 	public void run() {
 		synchronized(this) {
-			this.thread_started = true;
-			this.notify();
+            synchronized(this.thread_started_cond) {
+                this.thread_started = true;
+                thread_started_cond.notify();
+            }
 			this.exchange_rates = new HashMap<String, ExchangeRate>();
 			for (int i = 0; i < currency_abbreviations.length; i++) {
 				this.exchange_rates.put(currency_abbreviations[i],
@@ -229,10 +284,12 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 						  SECONDS_PER_AUTOMATIC_UPDATE + " seconds old");
 					try {
 						download_rates();
+                        update_db(exchange_rates, db);
 					} catch (Exception e) {
 						Log.e(TAG, "Error downloading currency exchange rates", e);
 					}
 					this.update_done = true;
+					this.notify();
 				} else {
 					Log.d(TAG, "No exchange rates are more than " +
 							   SECONDS_PER_AUTOMATIC_UPDATE + " seconds old");
@@ -242,6 +299,7 @@ public class CurrencyRatesManager implements java.lang.Runnable {
 							   " seconds");
 					this.wait(SECONDS_PER_AUTOMATIC_UPDATE * 1000);
 				} catch (InterruptedException e) {
+                    Log.e(TAG, "Thread interrupted!");
 				}
 			}
 		}
