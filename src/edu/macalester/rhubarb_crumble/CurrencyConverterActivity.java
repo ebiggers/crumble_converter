@@ -36,16 +36,41 @@ public class CurrencyConverterActivity extends Activity
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Set the view to currency_converter.xml
 		setContentView(R.layout.currency_converter);
 
+		// Start a new thread that will be responsible for managing currency
+		// exchange rates.
 		Handler activity_handler = new Handler(this);
 		this.rates_manager = new CurrencyRatesManager(this, activity_handler);
-		cur_amount_valid = false;
 
+		// Get the list of currency names
+		this.currency_abbrevs = rates_manager.getCurrencyAbbreviations();
+		int num_currencies = currency_abbrevs.length;
+		String[] currency_choices = load_currency_names(this.currency_abbrevs);
+
+		// Set callbacks on the from-currency and to-currency spinners
+		ArrayAdapter adapter = new ArrayAdapter(this,
+												android.R.layout.simple_spinner_item,
+												currency_choices);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		Spinner from_spinner = (Spinner)findViewById(R.id.from_currency_spinner);
+		Spinner to_spinner = (Spinner)findViewById(R.id.to_currency_spinner);
+		from_spinner.setAdapter(adapter);
+		from_spinner.setOnItemSelectedListener(this);
+		to_spinner.setAdapter(adapter);
+		to_spinner.setOnItemSelectedListener(this);
+
+		// Initialize callback for the numberic input field
 		EditText edit_text = (EditText)findViewById(R.id.currency_converter_edit_text);
 		edit_text.addTextChangedListener(this);
+		this.cur_amount_valid = false;
+	}
 
-		currency_abbrevs = rates_manager.getCurrencyAbbreviations();
+	// Given a list of currency abbreviations, load their full localized names.
+	private String[] load_currency_names(String[] currency_abbrevs) {
 		int num_currencies = currency_abbrevs.length;
 		String[] currency_choices = new String[num_currencies];
 		Resources resources = getResources();
@@ -68,28 +93,21 @@ public class CurrencyConverterActivity extends Activity
 			}
 			currency_choices[i] = name;
 		}
-		ArrayAdapter adapter = new ArrayAdapter(this,
-												android.R.layout.simple_spinner_item,
-												currency_choices);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-		Spinner from_spinner = (Spinner)findViewById(R.id.from_currency_spinner);
-		Spinner to_spinner = (Spinner)findViewById(R.id.to_currency_spinner);
-
-		from_spinner.setAdapter(adapter);
-		from_spinner.setOnItemSelectedListener(this);
-		to_spinner.setAdapter(adapter);
-		to_spinner.setOnItemSelectedListener(this);
+		return currency_choices;
 	}
 
+	// Set the text in the converter output field.
 	private void setConversionOutput(String s) {
 		TextView v = (TextView)findViewById(R.id.currency_conversion_output);
 		v.setText(s);
 	}
 
+	// Process a message received from the CurrencyRatesManager thread.
 	public boolean handleMessage(Message msg) {
 		switch (msg.what) {
 		case CurrencyRatesManager.MSG_HAVE_CURRENCY_RATE:
+			// Received a currency rate (it may or may not be outdated.)
+			// Possibly do a conversion.
 			ExchangeRate r = (ExchangeRate)msg.obj;
 			Log.d(TAG, "Received message MSG_HAVE_CURRENCY_RATE (" + r.abbrev + ")");
 			int currency_idx = msg.arg1;
@@ -105,6 +123,7 @@ public class CurrencyConverterActivity extends Activity
 		return true;
 	}
 
+	// Perform a currency conversion and set the output text.
 	private void do_conversion() {
 		assert(from_exchange_rate != null && to_exchange_rate != null);
 		assert(from_currency_idx != -1 && to_currency_idx != -1);
@@ -139,12 +158,17 @@ public class CurrencyConverterActivity extends Activity
 		setConversionOutput(result);
 	}
 
+	// Do a conversion, but only if both exchange rates are available.  It
+	// doesn't matter if they are outdated or not.
 	private void maybe_do_outdated_conversion() {
 		if (from_exchange_rate != null && to_exchange_rate != null) {
 			do_conversion();
 		}
 	}
 
+	// Do a conversion if both exchange rates are up to date.  Otherwise, send a
+	// message to the CurrencyRatesManager thread saying we need a new exchange
+	// rate.
 	private void maybe_do_conversion() {
 		Message msg;
 		boolean conversion_possible_now = true;
@@ -181,6 +205,7 @@ public class CurrencyConverterActivity extends Activity
 		}
 	}
 
+	// Callback when a "from" or "to" currency is selected.
 	public void onItemSelected(AdapterView<?> parent, View view,
 							   int position, long id) {
 		if (parent.getId() == R.id.from_currency_spinner) {
@@ -207,6 +232,7 @@ public class CurrencyConverterActivity extends Activity
 		maybe_do_conversion();
 	}
 
+	// Callback when a "from" or "to" currency is deselected
 	public void onNothingSelected(AdapterView<?> parent) {
 		if (parent.getId() == R.id.from_currency_spinner) {
 			Log.d(TAG, "Deselected \"from\" currency");
@@ -220,6 +246,7 @@ public class CurrencyConverterActivity extends Activity
 		setConversionOutput("");
 	}
 
+	// Callback when the text in the numeric input field is edited
 	public void afterTextChanged(Editable ed) {
 		if (ed.length() == 0) {
 			cur_amount_valid = false;
@@ -239,9 +266,11 @@ public class CurrencyConverterActivity extends Activity
 
 	public void beforeTextChanged(CharSequence s, int start, int count,
 								  int after) {
+		// Handled in afterTextChanged()
 	}
 
 	public void onTextChanged(CharSequence s, int start, int before,
 							  int count) {
+		// Handled in afterTextChanged()
 	}
 }

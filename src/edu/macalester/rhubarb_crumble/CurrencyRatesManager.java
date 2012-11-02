@@ -63,6 +63,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 	private SQLiteDatabase db;
 	private CurrencyDBOpenHelper db_helper;
 
+	// Helper class to create the database if it doesn't already exist.
 	private static class CurrencyDBOpenHelper extends SQLiteOpenHelper {
 		private static final int DATABASE_VERSION = 5;
 		private static final String DATABASE_NAME = "currencies.db";
@@ -84,6 +85,9 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		}
 	};
 
+	// Launch the CurrencyRatesManager in a new thread, wait for it to start,
+	// then send it a message telling it to download new currency exchange
+	// rates.
 	public CurrencyRatesManager(Context ctx, Handler activity_handler) {
 		this.ctx = ctx;
 		this.thread_started = false;
@@ -105,21 +109,27 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		this.handler.sendMessage(msg);
 	}
 
+	// Close the database.
 	public void finalize() {
-		if (this.db_helper != null)
+		if (this.db_helper != null) {
 			this.db_helper.close();
+			this.db_helper = null;
+		}
 	}
 
+	// Retrieves an android.os.Handler instance that can be used to send a
+	// message to the CurrencyRatesManager thread.
 	public Handler getHandler() {
 		return this.handler;
 	}
 
+	// Returns an array containing the list of supported currency abbreviations.
 	public final String[] getCurrencyAbbreviations() {
 		return currency_abbreviations;
 	}
 
+	// Loads currency exchange rates from the local SQLite database.
 	private void load_rates_from_db(SQLiteDatabase db) {
-		//Cursor cur = db.query("currency", null, null, null, null, null, null);
 		Cursor cur = db.rawQuery("SELECT * FROM currency", null);
 		if (cur.moveToFirst()) {
 			int count = cur.getCount();
@@ -143,6 +153,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		cur.close();
 	}
 
+	// Downloads new currency exchange rates from Yahoo.
 	private void download_rates() throws MalformedURLException, IOException {
 		String url_str = YAHOO_URL + "?";
 		for (String abbrev : this.currency_abbreviations) {
@@ -192,6 +203,8 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		Log.i(TAG, "Updated exchange rates for " + num_rates + " currencies");
 	}
 
+	// Returns true iff any currency exchange rates are missing or more than
+	// SECONDS_PER_AUTOMATIC_UPDATE seconds old.
 	private boolean any_rates_outdated() {
 		long now = new Date().getTime();
 		long oldest_update = now;
@@ -214,6 +227,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
         }
 	}
 
+	// Saves the currency exchange rates into the local SQLite database.
     private void update_db(Map<String, ExchangeRate> exchange_rates,
                            SQLiteDatabase db)
 	{
@@ -244,6 +258,8 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		}
     }
 
+	// Downloads new currency exchange rates, then saves them into the local
+	// SQLite database.
 	private void download_and_update_rates() {
 		try {
 			download_rates();
@@ -254,10 +270,13 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		}
 	}
 
+	// Callback when a message is sent to us by the CurrencyConverterActivity
+	// thread.
 	public boolean handleMessage(Message msg) {
 		Message nmsg;
 		switch (msg.what) {
 		case MSG_TIME_TO_DOWNLOAD:
+			// Time to download new currency exchange rates!
 			Log.d(TAG, "Received message MSG_TIME_TO_DOWNLOAD");
 			if (any_rates_outdated()) {
 				Log.d(TAG, "One or more exchange rates is more than " +
@@ -272,9 +291,15 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 			nmsg = Message.obtain();
 			nmsg.what = MSG_TIME_TO_DOWNLOAD;
 			nmsg.arg1 = msg.arg1;
+			// In SECONDS_PER_AUTOMATIC_UPDATE seconds, do this again.
 			this.handler.sendMessageDelayed(nmsg, SECONDS_PER_AUTOMATIC_UPDATE * 1000);
 			break;
 		case MSG_NEED_CURRENCY_RATE:
+			// Need to get a specific currency exchange rate.  If it's up to
+			// date, it's immediately sent back.  Otherwise, currency exchange
+			// rates are downloaded.  It's possible for the rate to still be out
+			// of date if the download fails, but a message is sent back to the
+			// activity thread in any case.
 			Log.d(TAG, "Received message MSG_NEED_CURRENCY_RATE");
 			String currency_abbrev = (String)msg.obj;
 			long now = new Date().getTime();
@@ -314,18 +339,24 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		return true;
 	}
 
+	// Entry point for the CurrencyRatesManager thread
 	public void run() {
 		synchronized(this.thread_started_cond) {
+			// Set up a message queue, then notify the CurrencyConverterActivity
+			// thread that this thread has been started.
 			Looper.prepare();
 			this.handler = new Handler(this);
 			this.thread_started = true;
 			this.thread_started_cond.notify();
 		}
+
+		// Load dummy exchange rates into the exchange_rates map.
 		this.exchange_rates = new HashMap<String, ExchangeRate>();
 		for (int i = 0; i < this.currency_abbreviations.length; i++) {
 			this.exchange_rates.put(this.currency_abbreviations[i],
 									new ExchangeRate());
 		}
+		// Open/create the database and load the exchange rates.
 		try {
 			Log.d(TAG, "Creating CurrencyDBOpenHelper");
 			this.db_helper = new CurrencyDBOpenHelper(ctx);
@@ -336,6 +367,8 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 			Log.e(TAG, "Error opening, creating, or reading database", e);
 			this.db = null;
 		}
+		// Enter the message loop.  Next function called will be
+		// handleMessage().
 		Looper.loop();
 	}
 }
