@@ -16,9 +16,9 @@ public class UnitCategoryChooserActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.unit_category_chooser);
 		View additionalUnitsLabel = findViewById(R.id.additional_units_label);
-		RotateAnimation animate = (RotateAnimation)AnimationUtils.loadAnimation(this, R.animator.rotate90);
-		animate.setFillAfter(true);
-		additionalUnitsLabel.setAnimation(animate);
+		//RotateAnimation animate = (RotateAnimation)AnimationUtils.loadAnimation(this, R.animator.rotate90);
+		//animate.setFillAfter(true);
+		//additionalUnitsLabel.setAnimation(animate);
 		
 	}
 }
