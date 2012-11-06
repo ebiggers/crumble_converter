@@ -2,7 +2,18 @@
 <resources>
 
     <!--Unit categories-->
-    <string name="length">Length</string>
+    <string name="distance">Distance</string>
+    <string name="temperature">Temperature</string>
+    <string name="time">Time</string>
+    <string name="volume">Volume</string>
+    <string name="weight">Weight</string>
+    <string name="angle">Angle</string>
+    <string name="area">Area</string>
+    <string name="energy">Energy</string>
+    <string name="force">Force</string>
+    <string name="pressure">Pressure</string>
+    <string name="speed">Speed</string>
+    <string name="additional_units">Additional Units</string>
     <!--TODO-->
 
     <!--Unit names and abbreviations-->
@@ -13,6 +24,8 @@
     <string name="currency_button_name">Currency</string>
     <string name="units_button_name">Units</string>
     <string name="calculator_button">Calculator</string>
+    <string name="additional_units_button_name">Show additional units</string>
+    <string name="prefixes_button_name">Metric Prefixes</string>
 
     <!--Application labels (see AndroidManifest.xml) -->
     <string name="app_name">Crumble Converter</string>

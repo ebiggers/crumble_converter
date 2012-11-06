@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!--<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -9,4 +9,105 @@
     android:layout_height="wrap_content"
     android:text="Hello World, UnitCategoryChooserActivity"
     />
-</LinearLayout>
+</LinearLayout> -->
+<!-- <?xml version="1.0" encoding="utf-8"?>-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_alignParentBottom="true">
+    <Button
+        android:text="@string/additional_units_button_name"
+        android:id="@+id/show_additional_units_button"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </Button>
+	<ScrollView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:padding="12dp">
+	    <LinearLayout 
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical">
+		    <Button 
+		        android:text="@string/distance"
+		        android:id="@+id/distance_button"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"/>
+		    <Button 
+		        android:text="@string/temperature"
+		        android:id="@+id/temperature_button"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"/>
+		  	<Button 
+		        android:text="@string/time"
+		        android:id="@+id/time_button"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"/>
+		    <Button 
+		        android:text="@string/volume"
+		        android:id="@+id/volume_button"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"/>
+		    <Button 
+		        android:text="@string/weight"
+		        android:id="@+id/weight_button"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"/>
+		    <Button 
+		        android:text="@string/prefixes_button_name"
+		        android:id="@+id/prefixes_button"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"/>
+		    <LinearLayout 
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="horizontal">
+		        <TextView 
+		            android:id="@+id/additional_units_label"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="@string/additional_units" 
+		            android:textSize="30dp"/>
+		        <LinearLayout
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:orientation="vertical"
+		            android:id="@+id/additional_units_layout">
+		            <Button 
+		                android:text="@string/angle"
+		                android:id="@+id/angle_button"
+		                android:layout_width="fill_parent"
+		                android:layout_height="wrap_content"/>
+		            <Button 
+		                android:text="@string/area"
+		                android:id="@+id/area_button"
+		                android:layout_width="fill_parent"
+		                android:layout_height="wrap_content"/>
+		            <Button 
+		                android:text="@string/energy"
+		                android:id="@+id/energy_button"
+		                android:layout_width="fill_parent"
+		                android:layout_height="wrap_content"/>
+		            <Button 
+		                android:text="@string/force"
+		                android:id="@+id/force_button"
+		                android:layout_width="fill_parent"
+		                android:layout_height="wrap_content"/>
+		            <Button 
+		                android:text="@string/pressure"
+		                android:id="@+id/pressure_button"
+		                android:layout_width="fill_parent"
+		                android:layout_height="wrap_content"/>
+		            <Button 
+		                android:text="@string/speed"
+		                android:id="@+id/speed_button"
+		                android:layout_width="fill_parent"
+		                android:layout_height="wrap_content"/>
+		        </LinearLayout>
+		    </LinearLayout>
+	    </LinearLayout>
+	</ScrollView>
+</RelativeLayout>
