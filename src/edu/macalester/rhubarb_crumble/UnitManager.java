@@ -16,6 +16,11 @@ public class UnitManager {
 
 	private static String TAG = "UnitManager";
 
+	private static String IDENTIFIER_NAME_REGEX = "[a-z0-9_]+";
+	private static String FLOATING_POINT_REGEX =
+				"[-+]?(?:(?:[0-9]+(?:\\.[0-9]*)?)|(?:\\.[0-9]+))(?:[eE][-+]?[0-9]+)?";
+	private static String INTEGER_REGEX = "[0-9]+";
+
 	// Load a category of units from the corresponding configuration file in the
 	// 'res/raw' directory.
 	//
@@ -63,9 +68,9 @@ public class UnitManager {
 
 		// Regular expression to match:
 		//    <alphanumeric unit identifier name> , <floating point number> , <integer>
-		Pattern pat = Pattern.compile("^\\s*([a-z0-9_]+)\\s*," +
-									  "\\s*([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\s*," + 
-									  "\\s*[0-9]+\\s*$");
+		Pattern pat = Pattern.compile("^\\s*(" + IDENTIFIER_NAME_REGEX + ")\\s*," +
+									   "\\s*(" + FLOATING_POINT_REGEX  + ")\\s*," + 
+									   "\\s*(" + INTEGER_REGEX		   + ")\\s*$");
 		try {
 			String line;
 
