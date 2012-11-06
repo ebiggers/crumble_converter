@@ -1,13 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="Hello World, UnitConverterActivity"
-    />
-</LinearLayout>
+    android:layout_height="fill_parent" >
 
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:padding="12dp"
+	    >
+	
+	    <EditText
+	        android:id="@+id/unitAmount"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:ems="10"
+	        android:inputType="numberDecimal" />
+	
+	   	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	   	    android:orientation="horizontal"
+	   	    android:layout_width="fill_parent"
+	   	    android:layout_height="wrap_content" 
+	   	    android:baselineAligned="false">
+	   	    
+	   	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	   	        android:orientation="vertical"
+	   	        android:layout_width="fill_parent"
+	   	        android:layout_height="wrap_content"
+	   	        android:layout_weight="1" >
+	   	        
+	   	        <TextView
+	   	            android:id="@+id/fromLabel"
+	   	            android:layout_width="match_parent"
+	   	            android:layout_height="wrap_content"
+	   	            android:gravity="center"
+	   	            android:text="@string/unit_input_label"
+	   	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	   	        
+	   	        <Spinner
+		        	android:id="@+id/unitInput1"
+		        	android:layout_width="match_parent"
+		        	android:layout_height="wrap_content" />
+	   	        
+	   	    </LinearLayout>   	
+	   	    
+	   	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	   	        android:orientation="vertical"
+	   	        android:layout_width="fill_parent"
+	   	        android:layout_height="wrap_content"
+	   	        android:layout_weight="1" >
+	   	        
+	   	        <TextView
+	   	            android:id="@+id/toLabel"
+	   	            android:layout_width="match_parent"
+	   	            android:layout_height="wrap_content"
+	   	            android:gravity="center"
+	   	            android:text="@string/unit_output_label"
+	   	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	   	        
+	   	        <Spinner
+		        	android:id="@+id/unitInput2"
+		        	android:layout_width="match_parent"
+		        	android:layout_height="wrap_content" />
+	   	          	          	        
+	   	    </LinearLayout>   		   
+	   	    
+	   	</LinearLayout>
+	
+	   	<TextView
+	   	    android:id="@+id/textView1"
+	   	    android:layout_width="match_parent"
+	   	    android:layout_height="wrap_content"
+	   	    android:gravity="center"
+	   	    android:text="Medium Text"
+	   	    android:textAppearance="?android:attr/textAppearanceMedium"
+	   	    android:padding="20dp" />
+	
+	</LinearLayout>
+
+	<CheckBox
+	    android:id="@+id/addUnitsCheckBox"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_centerHorizontal="true"
+	    android:layout_marginBottom="40dp"
+	    android:text="@string/additional_units_checkbox_name" />
+
+</RelativeLayout>
