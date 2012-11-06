@@ -9,5 +9,6 @@ public class CalculatorActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.calculator);
+		//Alexa made this change
 	}
 }
