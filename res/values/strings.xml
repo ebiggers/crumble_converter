@@ -199,5 +199,21 @@
     <string name="ZAR">South Africa Rand</string>
     <string name="ZMK">Zambia Kwacha</string>
     <string name="ZWD">Zimbabwe Dollar</string>
-
+  <!--Calculator Buttons-->
+  <string name="btnNum9">9</string>
+  <string name="btnNum8">8</string>
+  <string name="btnNum7">7</string>
+  <string name="btnNum6">6</string>
+  <string name="btnNum5">5</string>
+  <string name="btnNum4">4</string>
+  <string name="btnNum3">3</string>
+  <string name="btnNum2">2</string>
+  <string name="btnNum1">1</string>
+  <string name="btnNum0">0</string>
+  <string name="btnDiv">/</string>
+  <string name="btnAdd">+</string>
+  <string name="btnSub">-</string>
+  <string name="btnMul">x</string>
+  <string name="btnClear">C</string>
+  <string name="btnEqual">=</string>
 </resources>
