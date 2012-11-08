@@ -1,5 +1,5 @@
 #all numbers measured in newtons.
-newtons				, 1					, 0
-pound_forces		, 4.448221615		, 0
-poundals			, 0.138254954		, 0
-kilogram_forces		, 9.80665			, 0
+newtons             , 1                 , 0
+pound_forces        , 4.448221615       , 0
+poundals            , 0.138254954       , 0
+kilogram_forces     , 9.80665           , 0
