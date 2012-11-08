@@ -1,1 +1,16 @@
-# TODO
+#all numbers measured in cubic_meters.
+cubic_inches		, 16.387064e-16		, 1
+cubic_foot			, 0.028316846592	, 0
+cubic_centimeters	, 1e-6				, 1
+cubic_meters		, 1					, 0
+cords				, 3.624556363776	, 1
+us_gallons			, 3.785411784e-3	, 0
+us_quarts			, 946.352946e-6		, 0
+us_pints			, 473.176473e-6		, 0
+us_cups				, 236.5882365e-6	, 1
+tablespoons			, 14.7867647825e-5	, 1
+teaspoons			, 4.928921595e-6	, 1
+fluid_ounces		, 29.5735295625e-6	, 0
+liters				, 0.001				, 0
+milliliters			, 1e-6				, 1
+

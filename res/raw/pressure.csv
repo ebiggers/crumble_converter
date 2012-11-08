@@ -1,1 +1,9 @@
-# TODO
+#all numbers measured in pascals.
+pascals					, 1					, 0
+kilopascals				, 1000				, 1
+atmospheres				, 101325			, 0
+pounds_per_square_inch	, 6894.767			, 0
+millibars				, 100				, 1
+bars					, 100000			, 0
+inches_of_mercury		, 3386.389			, 0
+						
