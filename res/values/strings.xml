@@ -36,6 +36,7 @@
     <string name="unit_category_chooser_title">Unit Categories</string>
     <string name="unit_converter_title">Units</string>
     <string name="calculator_title">Calculator</string>
+    <string name="main_activity_title">Crumble Converter</string>
 
     <!-- Currency names -->
     <string name="AED">United Arab Emirates Dirham</string>

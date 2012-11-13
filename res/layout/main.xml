@@ -2,23 +2,36 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="12dp" >
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_activity_title"
+        android:gravity="center"
+        android:textSize="24dp" />
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
 
     <Button
         android:id="@+id/currency_button"
-        android:layout_width="297dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/currency_button_name" />
 
     <Button
         android:id="@+id/units_button"
-        android:layout_width="297dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/units_button_name" />
 
     <Button
         android:id="@+id/calculator_button"
-        android:layout_width="293dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/calculator_button" />
 
