@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--Unit categories-->
+    <!-- Unit categories -->
     <string name="distance">Distance</string>
     <string name="temperature">Temperature</string>
     <string name="time">Time</string>
@@ -14,12 +14,13 @@
     <string name="pressure">Pressure</string>
     <string name="speed">Speed</string>
     <string name="additional_units">A\nd\nd\ni\nt\ni\no\nn\na\nl\n \nU\nn\ni\nt\ns</string>
-    <!--TODO-->
+    <!-- TODO -->
 
-    <!--Unit names and abbreviations-->
+
+    <!-- Unit names and abbreviations -->
     <string name="meters">meters</string>
     <string name="meters.abbrev">m</string>
-    
+
     <!-- Button labels -->
     <string name="currency_button_name">Currency</string>
     <string name="units_button_name">Units</string>
@@ -29,14 +30,14 @@
     <string name="unit_input_label">Input Unit</string>
     <string name="unit_output_label">Output Unit</string>
 
-    <!--Application labels (see AndroidManifest.xml) -->
+    <!-- Application labels (see AndroidManifest.xml) -->
     <string name="app_name">Crumble Converter</string>
     <string name="currency_converter_title">Currency</string>
     <string name="unit_category_chooser_title">Unit Categories</string>
     <string name="unit_converter_title">Units</string>
     <string name="calculator_title">Calculator</string>
 
-    <!--Currency names-->
+    <!-- Currency names -->
     <string name="AED">United Arab Emirates Dirham</string>
     <string name="AFN">Afghanistan Afghani</string>
     <string name="ALL">Albania Lek</string>
@@ -201,21 +202,69 @@
     <string name="ZAR">South Africa Rand</string>
     <string name="ZMK">Zambia Kwacha</string>
     <string name="ZWD">Zimbabwe Dollar</string>
-  <!--Calculator Buttons-->
-  <string name="btnNum9">9</string>
-  <string name="btnNum8">8</string>
-  <string name="btnNum7">7</string>
-  <string name="btnNum6">6</string>
-  <string name="btnNum5">5</string>
-  <string name="btnNum4">4</string>
-  <string name="btnNum3">3</string>
-  <string name="btnNum2">2</string>
-  <string name="btnNum1">1</string>
-  <string name="btnNum0">0</string>
-  <string name="btnDiv">/</string>
-  <string name="btnAdd">+</string>
-  <string name="btnSub">-</string>
-  <string name="btnMul">x</string>
-  <string name="btnClear">C</string>
-  <string name="btnEqual">=</string>
+    <!-- Calculator Buttons -->
+    <string name="btnNum9">9</string>
+    <string name="btnNum8">8</string>
+    <string name="btnNum7">7</string>
+    <string name="btnNum6">6</string>
+    <string name="btnNum5">5</string>
+    <string name="btnNum4">4</string>
+    <string name="btnNum3">3</string>
+    <string name="btnNum2">2</string>
+    <string name="btnNum1">1</string>
+    <string name="btnNum0">0</string>
+    <string name="btnDiv">/</string>
+    <string name="btnAdd">+</string>
+    <string name="btnSub">-</string>
+    <string name="btnMul">x</string>
+    <string name="btnClear">C</string>
+    <string name="btnEqual">=</string>
+    
+    <!-- Metric Prefixes -->
+  <string name="metric_prefix_page_title">Metric Prefixes</string>
+  <string name="prefix_title">Prefix</string>
+  <string name="yotta">yotta</string>
+  <string name="zetta">zetta</string>
+  <string name="exa">exa</string>
+  <string name="peta">peta</string>
+  <string name="tera">tera</string>
+  <string name="giga">giga</string>
+  <string name="mega">mega</string>
+  <string name="kilo">kilo</string>
+  <string name="hecto">hecto</string>
+  <string name="deca">deca</string>  
+  <string name="deci">deci</string>  
+  <string name="centi">centi</string>
+  <string name="milli">milli</string>
+  <string name="micro">micro</string>
+  <string name="nano">nano</string>
+  <string name="pico">pico</string>
+  <string name="femto">femto</string>
+  <string name="atto">atto</string>
+  <string name="zepto">zepto</string>
+  <string name="yocto">yocto</string>
+  
+  <!-- Metric Prefix Exponents -->
+  <string name="exp_title">Exponential</string>
+  <string name="yottaExp">24</string>
+  <string name="zettaExp">21</string>
+  <string name="exaExp">18</string>
+  <string name="petaExp">15</string>
+  <string name="teraExp">12</string>
+  <string name="gigaExp">9</string>
+  <string name="megaExp">6</string>
+  <string name="kiloExp">3</string>
+  <string name="hectoExp">2</string>
+  <string name="decaExp">1</string>  
+  <string name="deciExp">-1</string>  
+  <string name="centiExp">-2</string>
+  <string name="milliExp">-3</string>
+  <string name="microExp">-6</string>
+  <string name="nanoExp">-9</string>
+  <string name="picoExp">-12</string>
+  <string name="femtoExp">-15</string>
+  <string name="attoExp">-18</string>
+  <string name="zeptoExp">-21</string>
+  <string name="yoctoExp">-24</string>
+
 </resources>
