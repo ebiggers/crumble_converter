@@ -21,8 +21,8 @@ public class CurrencyConverterActivity extends Activity
 			 implements OnItemSelectedListener, TextWatcher, Handler.Callback {
 
 	private CurrencyRatesManager rates_manager;
-	private int from_currency_idx = -1;
-	private int to_currency_idx = -1;
+	private int from_currency_idx;
+	private int to_currency_idx;
 
 	private ExchangeRate from_exchange_rate;
 	private ExchangeRate to_exchange_rate;
@@ -66,6 +66,8 @@ public class CurrencyConverterActivity extends Activity
 		// Initialize callback for the numberic input field
 		EditText edit_text = (EditText)findViewById(R.id.currency_converter_edit_text);
 		edit_text.addTextChangedListener(this);
+		this.from_currency_idx = -1;
+		this.to_currency_idx = -1;
 		this.cur_amount_valid = false;
 	}
 
