@@ -45,9 +45,12 @@ public class UnitManager {
 		Resources resources = context.getResources();
 		String filename = category + ".csv";
 		ArrayList<Unit> units = new ArrayList<Unit>();
+		String pkgname = context.getPackageName();
+
+		Log.d(TAG, "Looking for resource " + filename + " in package " + pkgname);
 
 		// Open the configuration file.
-		int id = resources.getIdentifier(filename, "raw", context.getPackageName());
+		int id = resources.getIdentifier(category, "raw", pkgname);
 		InputStream is;
 		try {
 			is = resources.openRawResource(id);
