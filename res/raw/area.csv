@@ -1,7 +1,7 @@
 #all numbers are measured in square_meters
 square_inches       , 0.00064516        , 0
 square_feet         , 0.092903          , 0
-square_acres        , 4046.8564224      , 1
+acres       		, 4046.8564224      , 1
 hectares            , 10000             , 1
 square_miles        , 2589988.1103      , 0
 square_millimeters  , 1e-6              , 1
