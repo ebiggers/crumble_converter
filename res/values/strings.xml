@@ -221,50 +221,50 @@
     <string name="btnEqual">=</string>
     
     <!-- Metric Prefixes -->
-  <string name="metric_prefix_page_title">Metric Prefixes</string>
-  <string name="prefix_title">Prefix</string>
-  <string name="yotta">yotta</string>
-  <string name="zetta">zetta</string>
-  <string name="exa">exa</string>
-  <string name="peta">peta</string>
-  <string name="tera">tera</string>
-  <string name="giga">giga</string>
-  <string name="mega">mega</string>
-  <string name="kilo">kilo</string>
-  <string name="hecto">hecto</string>
-  <string name="deca">deca</string>  
-  <string name="deci">deci</string>  
-  <string name="centi">centi</string>
-  <string name="milli">milli</string>
-  <string name="micro">micro</string>
-  <string name="nano">nano</string>
-  <string name="pico">pico</string>
-  <string name="femto">femto</string>
-  <string name="atto">atto</string>
-  <string name="zepto">zepto</string>
-  <string name="yocto">yocto</string>
-  
-  <!-- Metric Prefix Exponents -->
-  <string name="exp_title">Exponential</string>
-  <string name="yottaExp">24</string>
-  <string name="zettaExp">21</string>
-  <string name="exaExp">18</string>
-  <string name="petaExp">15</string>
-  <string name="teraExp">12</string>
-  <string name="gigaExp">9</string>
-  <string name="megaExp">6</string>
-  <string name="kiloExp">3</string>
-  <string name="hectoExp">2</string>
-  <string name="decaExp">1</string>  
-  <string name="deciExp">-1</string>  
-  <string name="centiExp">-2</string>
-  <string name="milliExp">-3</string>
-  <string name="microExp">-6</string>
-  <string name="nanoExp">-9</string>
-  <string name="picoExp">-12</string>
-  <string name="femtoExp">-15</string>
-  <string name="attoExp">-18</string>
-  <string name="zeptoExp">-21</string>
-  <string name="yoctoExp">-24</string>
+    <string name="metric_prefix_page_title">Metric Prefixes</string>
+    <string name="prefix_title">Prefix</string>
+    <string name="yotta">yotta</string>
+    <string name="zetta">zetta</string>
+    <string name="exa">exa</string>
+    <string name="peta">peta</string>
+    <string name="tera">tera</string>
+    <string name="giga">giga</string>
+    <string name="mega">mega</string>
+    <string name="kilo">kilo</string>
+    <string name="hecto">hecto</string>
+    <string name="deca">deca</string>    
+    <string name="deci">deci</string>    
+    <string name="centi">centi</string>
+    <string name="milli">milli</string>
+    <string name="micro">micro</string>
+    <string name="nano">nano</string>
+    <string name="pico">pico</string>
+    <string name="femto">femto</string>
+    <string name="atto">atto</string>
+    <string name="zepto">zepto</string>
+    <string name="yocto">yocto</string>
+    
+    <!-- Metric Prefix Exponents -->
+    <string name="exp_title">Exponential</string>
+    <string name="yottaExp">24</string>
+    <string name="zettaExp">21</string>
+    <string name="exaExp">18</string>
+    <string name="petaExp">15</string>
+    <string name="teraExp">12</string>
+    <string name="gigaExp">9</string>
+    <string name="megaExp">6</string>
+    <string name="kiloExp">3</string>
+    <string name="hectoExp">2</string>
+    <string name="decaExp">1</string>    
+    <string name="deciExp">-1</string>    
+    <string name="centiExp">-2</string>
+    <string name="milliExp">-3</string>
+    <string name="microExp">-6</string>
+    <string name="nanoExp">-9</string>
+    <string name="picoExp">-12</string>
+    <string name="femtoExp">-15</string>
+    <string name="attoExp">-18</string>
+    <string name="zeptoExp">-21</string>
+    <string name="yoctoExp">-24</string>
 
 </resources>

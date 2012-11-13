@@ -14,10 +14,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
-		Log.d(TAG, "Launching Crumble Converter");
-
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "Launching Crumble Converter");
 		setContentView(R.layout.main);
 
 		/** Set onClickListeners for the three buttons on the main screen. */
