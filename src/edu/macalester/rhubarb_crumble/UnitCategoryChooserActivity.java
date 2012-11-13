@@ -8,129 +8,97 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 
-public class UnitCategoryChooserActivity extends Activity implements OnClickListener{
+public class UnitCategoryChooserActivity extends Activity implements OnClickListener {
+
+	private static final String TAG = "UnitCategoryChooserActivity";
+
+	private void listenForClickOn(int resource_id) {
+		View view = findViewById(resource_id);
+		view.setOnClickListener(this);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "Starting UnitCategoryChooserActivity");
 		setContentView(R.layout.unit_category_chooser);
-		
-		View additionalUnitsCheckBox = findViewById(R.id.additional_units_chekbox);
-		additionalUnitsCheckBox.setOnClickListener(this);
-		
-		View distanceButton = findViewById(R.id.distance_button);
-		distanceButton.setOnClickListener(this);
-		
-		View temperatureButton = findViewById(R.id.temperature_button);
-		temperatureButton.setOnClickListener(this);
-		
-		View timeButton = findViewById(R.id.time_button);
-		timeButton.setOnClickListener(this);
-		
-		View volumeButton = findViewById(R.id.volume_button);
-		volumeButton.setOnClickListener(this);
-		
-		View weightButton = findViewById(R.id.weight_button);
-		weightButton.setOnClickListener(this);
-		
-		View metricPrefixesButton = findViewById(R.id.prefixes_button);
-		metricPrefixesButton.setOnClickListener(this);
-		
-		View angleButton = findViewById(R.id.angle_button);
-		angleButton.setOnClickListener(this);
-		
-		View areaButton = findViewById(R.id.area_button);
-		areaButton.setOnClickListener(this);
-		
-		View energyButton = findViewById(R.id.energy_button);
-		energyButton.setOnClickListener(this);
-		
-		View forceButton = findViewById(R.id.force_button);
-		forceButton.setOnClickListener(this);
-		
-		View pressureButton = findViewById(R.id.pressure_button);
-		pressureButton.setOnClickListener(this);
-		
-		View speedButton = findViewById(R.id.speed_button);
-		speedButton.setOnClickListener(this);
+
+		listenForClickOn(R.id.additional_units_chekbox);
+
+		listenForClickOn(R.id.distance_button);
+		listenForClickOn(R.id.temperature_button);
+		listenForClickOn(R.id.time_button);
+		listenForClickOn(R.id.volume_button);
+		listenForClickOn(R.id.weight_button);
+		listenForClickOn(R.id.prefixes_button);
+		listenForClickOn(R.id.angle_button);
+		listenForClickOn(R.id.area_button);
+		listenForClickOn(R.id.energy_button);
+		listenForClickOn(R.id.force_button);
+		listenForClickOn(R.id.pressure_button);
+		listenForClickOn(R.id.speed_button);
 	}
-	
+
 	public void onClick(View v)
 	{
+		String category;
 		switch(v.getId()) {
 		case R.id.additional_units_chekbox:
 			View additionalUnitsField = findViewById(R.id.additional_units_layout);
 			View additionalUnitsLabel = findViewById(R.id.additional_units_label);
-			if(((CheckBox) v).isChecked())
-			{
+			if(((CheckBox) v).isChecked()) {
 				additionalUnitsField.setVisibility(View.VISIBLE);
 				additionalUnitsLabel.setVisibility(View.VISIBLE);
 				Log.d("Category", "Checkbox Checked.");
-			}
-			else
-			{
+			} else {
 				additionalUnitsField.setVisibility(View.GONE);
 				additionalUnitsLabel.setVisibility(View.GONE);
 				Log.d("Category", "Checkbox not Checked");
 			}
 			additionalUnitsField.invalidate();
 			additionalUnitsLabel.invalidate();
-			break;
-		case R.id.distance_button:
-			Intent i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.distance);
-			startActivity(i);
-			break;
-		case R.id.temperature_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.temperature);
-			startActivity(i);
-			break;
-		case R.id.time_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.time);
-			startActivity(i);
-			break;
-		case R.id.volume_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.volume);
-			startActivity(i);
-			break;
-		case R.id.weight_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.weight);
-			startActivity(i);
-			break;
+			return;
 		case R.id.angle_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.angle);
-			startActivity(i);
+			category = "angle";
 			break;
 		case R.id.area_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.area);
-			startActivity(i);
+			category = "area";
 			break;
 		case R.id.energy_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.energy);
-			startActivity(i);
+			category = "energy";
 			break;
 		case R.id.force_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.force);
-			startActivity(i);
+			category = "force";
+			break;
+		case R.id.distance_button:
+			category = "length";
+			break;
+		case R.id.weight_button:
+			category = "mass";
 			break;
 		case R.id.pressure_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.pressure);
-			startActivity(i);
+			category = "pressure";
 			break;
 		case R.id.speed_button:
-			i = new Intent(this, UnitConverterActivity.class);
-			i.putExtra("category", R.string.speed);
-			startActivity(i);
+			category = "speed";
+			break;
+		case R.id.temperature_button:
+			category = "temperature";
+			break;
+		case R.id.time_button:
+			category = "time";
+			break;
+		case R.id.volume_button:
+			category = "volume";
+			break;
+		default:
+			Log.e(TAG, "Unimplemented button!");
+			category = "";
 			break;
 		}
+		Intent i = new Intent(this, UnitConverterActivity.class);
+		i.putExtra("category", category);
+		Log.d(TAG, "Starting UnitConverterActivity with category=\"" + category + "\"");
+		startActivity(i);
 	}
 }
