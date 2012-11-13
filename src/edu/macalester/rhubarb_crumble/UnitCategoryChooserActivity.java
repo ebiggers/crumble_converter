@@ -8,7 +8,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 
-public class UnitCategoryChooserActivity extends Activity implements OnClickListener {
+public class UnitCategoryChooserActivity extends Activity
+                                         implements OnClickListener
+{
 
 	private static final String TAG = "UnitCategoryChooserActivity";
 
@@ -20,8 +22,8 @@ public class UnitCategoryChooserActivity extends Activity implements OnClickList
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(TAG, "Starting UnitCategoryChooserActivity");
 		setContentView(R.layout.unit_category_chooser);
+		Log.d(TAG, "Starting UnitCategoryChooserActivity");
 
 		listenForClickOn(R.id.additional_units_chekbox);
 
