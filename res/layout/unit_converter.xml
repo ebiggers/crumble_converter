@@ -68,7 +68,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/unit_conversion_output"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
