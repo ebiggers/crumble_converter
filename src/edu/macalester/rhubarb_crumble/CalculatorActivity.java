@@ -1,131 +1,192 @@
 package edu.macalester.rhubarb_crumble;
  
-import android.os.Bundle;
 import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Button;
  
-public class CalculatorActivity extends Activity {
- 
-   private TextView txtResult; // Reference to EditText of result
-   private int result = 0;     // Result of computation
-   private String inStr = "0"; // Current input string
-   // Previous operator: '+', '-', '*', '/', '=' or ' ' (no operator)
-   private char lastOperator = ' ';
- 
-   @Override
-   public void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.calculator);
- 
-      // Retrieve a reference to the EditText field for displaying the result.
-      txtResult = (TextView) findViewById(R.id.txtResultId);
-      txtResult.setText("0");
- 
-      // Register listener (this class) for all the buttons
-      BtnListener listener = new BtnListener();
-      ((Button) findViewById(R.id.btnNum0Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnNum1Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnNum2Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnNum3Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnNum4Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnNum5Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnNum6Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnNum7Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnNum8Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnNum9Id)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnAddId)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnSubId)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnMulId)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnDivId)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnClearId)).setOnClickListener(listener);
-      ((Button) findViewById(R.id.btnEqualId)).setOnClickListener(listener);
-   }
- 
-   private class BtnListener implements OnClickListener {
-      // On-click event handler for all the buttons
-      @Override
-      public void onClick(View view) {
-         switch (view.getId()) {
-         // Number buttons: '0' to '9'
-         case R.id.btnNum0Id:
-         case R.id.btnNum1Id:
-         case R.id.btnNum2Id:
-         case R.id.btnNum3Id:
-         case R.id.btnNum4Id:
-         case R.id.btnNum5Id:
-         case R.id.btnNum6Id:
-         case R.id.btnNum7Id:
-         case R.id.btnNum8Id:
-         case R.id.btnNum9Id:
-            String inDigit = ((Button) view).getText().toString();
-            if (inStr.equals("0")) {
-               inStr = inDigit; // no leading zero
-            } else {
-               inStr += inDigit; // accumulate input digit
-            }
-            txtResult.setText(inStr);
-            // Clear buffer if last operator is '='
-            if (lastOperator == '=') {
-               result = 0;
-               lastOperator = ' ';
-            }
-            break;
- 
-         // Operator buttons: '+', '-', '*', '/' and '='
-         case R.id.btnAddId:
-            compute();
-            lastOperator = '+';
-            break;
-         case R.id.btnSubId:
-            compute();
-            lastOperator = '-';
-            break;
-         case R.id.btnMulId:
-            compute();
-            lastOperator = '*';
-            break;
-         case R.id.btnDivId:
-            compute();
-            lastOperator = '/';
-            break;
-         case R.id.btnEqualId:
-            compute();
-            lastOperator = '=';
-            break;
- 
-         // Clear button
-         case R.id.btnClearId:
-            result = 0;
-            inStr = "0";
-            lastOperator = ' ';
-            txtResult.setText("0");
-            break;
-         }
-      }
- 
-      // User pushes '+', '-', '*', '/' or '=' button.
-      // Perform computation on the previous result and the current input number,
-      // based on the previous operator.
-      private void compute() {
-         int inNum = Integer.parseInt(inStr);
-         inStr = "0";
-         if (lastOperator == ' ') {
-            result = inNum;
-         } else if (lastOperator == '+') {
-            result += inNum;
-         } else if (lastOperator == '-') {
-            result -= inNum;
-         } else if (lastOperator == '*') {
-            result *= inNum;
-         } else if (lastOperator == '/') {
-            result /= inNum;
-         } else if (lastOperator == '=') {
-            // Keep the result for the next operation
-         }
-         txtResult.setText(String.valueOf(result));
-      }
-   }
+public class CalculatorActivity extends Activity
+								implements OnClickListener
+{
+
+	private static final int OP_NONE = 0;
+	private static final int OP_ADD = 1;
+	private static final int OP_SUB = 2;
+	private static final int OP_MUL = 3;
+	private static final int OP_DIV = 4;
+
+	private static final String TAG = "CalculatorActivity";
+
+	private TextView displayView;
+	private String num1;
+	private String num2;
+	private int op;
+	private boolean num1_valid;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.calculator);
+
+		// Retrieve a reference to the EditText field for displaying the result.
+		displayView = (TextView) findViewById(R.id.txtResultId);
+
+		clear_calculator();
+
+		// Register listener (this class) for all the buttons
+		((Button) findViewById(R.id.btnNum0Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnNum1Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnNum2Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnNum3Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnNum4Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnNum5Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnNum6Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnNum7Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnNum8Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnNum9Id)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnAddId)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnSubId)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnMulId)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnDivId)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnClearId)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnEqualId)).setOnClickListener(this);
+	}
+
+	private void clear_calculator() {
+		num1 = "";
+		num2 = "";
+		displayView.setText("");
+		op = OP_NONE;
+		num1_valid = false;
+	}
+
+	private int buttonIdToOperator(int id) {
+		switch (id) {
+		case R.id.btnAddId:
+			return OP_ADD;
+		case R.id.btnSubId:
+			return OP_SUB;
+		case R.id.btnMulId:
+			return OP_MUL;
+		case R.id.btnDivId:
+			return OP_DIV;
+		default:
+			return OP_NONE;
+		}
+	}
+
+	// On-click event handler for all the buttons
+	@Override
+	public void onClick(View view) {
+		String display = null;
+		int viewId = view.getId();
+
+		switch (viewId) {
+			// Digit buttons
+			case R.id.btnNum0Id:
+			case R.id.btnNum1Id:
+			case R.id.btnNum2Id:
+			case R.id.btnNum3Id:
+			case R.id.btnNum4Id:
+			case R.id.btnNum5Id:
+			case R.id.btnNum6Id:
+			case R.id.btnNum7Id:
+			case R.id.btnNum8Id:
+			case R.id.btnNum9Id:
+				if (!num1.equals("0")) {
+					String digit = ((Button) view).getText().toString();
+					num1 += digit;
+					num1_valid = true;
+					display = num1;
+				}
+				break;
+
+			// Decimal point button
+			//case R.id.btnDecimalPointId:
+				//if (num1.indexOf('.') == -1) {
+					//num1 += ".";
+					//display = num1;
+				//}
+				//break;
+
+			// Binary operators: + - x /
+			case R.id.btnAddId:
+			case R.id.btnSubId:
+			case R.id.btnMulId:
+			case R.id.btnDivId:
+				if (num1_valid) {
+					if (num2.length() != 0 && op != OP_NONE) {
+						makeBinaryOperation();
+					} else {
+						num2 = num1;
+						num1 = "";
+						num1_valid = false;
+					}
+					op = buttonIdToOperator(viewId);
+				} else {
+					if (num2.length() != 0) {
+						op = buttonIdToOperator(viewId);
+					}
+				}
+				break;
+
+			// Equals button
+			case R.id.btnEqualId:
+				if (num2.length() != 0 && num1_valid && op != OP_NONE) {
+					makeBinaryOperation();
+				} else if (num1_valid) {
+					num2 = num1;
+					num1 = "";
+					num1_valid = false;
+					op = OP_NONE;
+					display = num2;
+				}
+				break;
+			// Clear button
+			case R.id.btnClearId:
+				clear_calculator();
+				break;
+		}
+		if (display != null)
+			displayView.setText(display);
+	}
+
+	private void makeBinaryOperation() {
+		double n1, n2;
+		try {
+			n1 = Double.parseDouble(num1);
+			n2 = Double.parseDouble(num2);
+		} catch (NumberFormatException e) {
+			Log.e(TAG, "Error parsing double", e);
+			n1 = 0.0;
+			n2 = 0.0;
+		}
+		double result;
+		switch (op) {
+		case OP_ADD:
+			result = n2 + n1;
+			break;
+		case OP_SUB:
+			result = n2 - n1;
+			break;
+		case OP_DIV:
+			result = n2 / n1;
+			break;
+		case OP_MUL:
+			result = n2 * n1;
+			break;
+		default:
+			assert(false);
+			result = 0;
+			break;
+		}
+		num2 = Double.toString(result);
+		num1 = "";
+		op = OP_NONE;
+		num1_valid = false;
+		displayView.setText(num2);
+	}
 }
