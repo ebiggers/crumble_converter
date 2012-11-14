@@ -31,28 +31,10 @@ public class CalculatorActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.calculator);
 
-		// Retrieve a reference to the EditText field for displaying the result.
+		// Retrieve a reference to the TextView field for the calucator display.
 		displayView = (TextView) findViewById(R.id.txtResultId);
 
 		clear_calculator();
-
-		// Register listener (this class) for all the buttons
-		((Button) findViewById(R.id.btnNum0Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnNum1Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnNum2Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnNum3Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnNum4Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnNum5Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnNum6Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnNum7Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnNum8Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnNum9Id)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnAddId)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnSubId)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnMulId)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnDivId)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnClearId)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnEqualId)).setOnClickListener(this);
 	}
 
 	private void clear_calculator() {
@@ -104,13 +86,14 @@ public class CalculatorActivity extends Activity
 				}
 				break;
 
-			// Decimal point button
-			//case R.id.btnDecimalPointId:
-				//if (num1.indexOf('.') == -1) {
-					//num1 += ".";
-					//display = num1;
-				//}
-				//break;
+
+            //Decimal point button
+            case R.id.btnDecimalPointId:
+                if (num1.indexOf('.') == -1) {
+                    num1 += ".";
+                    display = num1;
+                }
+                break;
 
 			// Binary operators: + - x /
 			case R.id.btnAddId:
@@ -149,6 +132,19 @@ public class CalculatorActivity extends Activity
 			case R.id.btnClearId:
 				clear_calculator();
 				break;
+
+            // Del button
+            case R.id.btnDelId:
+                if (num1.length() != 0) {
+                    num1 = num1.substring(0, num1.length() - 1);
+                    if (num1.length() < 2) {
+                        if (num1.length() == 0 || num1.charAt(0) == '.') {
+                            num1_valid = false;
+                        }
+                    }
+                    display = num1;
+                }
+                break;
 		}
 		if (display != null)
 			displayView.setText(display);

@@ -213,7 +213,9 @@
     <string name="btnAdd">+</string>
     <string name="btnSub">-</string>
     <string name="btnMul">x</string>
-    <string name="btnClear">C</string>
+    <string name="btnClear">AC</string>
+    <string name="btnDel">Del</string>
+    <string name="btnDecimalPoint">.</string>
     <string name="btnEqual">=</string>
     
     <!-- Metric Prefixes -->
