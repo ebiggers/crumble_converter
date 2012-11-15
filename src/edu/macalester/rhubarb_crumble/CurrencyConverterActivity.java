@@ -2,6 +2,7 @@ package edu.macalester.rhubarb_crumble;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -9,6 +10,9 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+
+import java.util.ArrayList;
+
 import android.view.View;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.AdapterView;
@@ -32,6 +36,30 @@ public class CurrencyConverterActivity extends Activity
 
 	private String[] currency_abbrevs;
 	private final String TAG = "CurrencyConverterActivity";
+
+	private TextView[] recent_currency_textviews;
+
+	private static class RecentCurrency {
+		public String abbrev;
+		public int abbrev_idx;
+		public ExchangeRate rate;
+
+		public RecentCurrency() {
+		}
+
+		public RecentCurrency(String abbrev, int abbrev_idx) {
+			this.abbrev       = abbrev;
+			this.abbrev_idx   = abbrev_idx;
+			this.rate         = null;
+		}
+	};
+
+	private ArrayList<RecentCurrency> recent_currencies;
+
+	private static final int NUM_RECENT_CURRENCIES = 3;
+
+	private static final int NEED_RATE_FOR_CONVERSION = 0;
+	private static final int NEED_RATE_FOR_LAST_CURRENCY_LIST = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,10 +86,17 @@ public class CurrencyConverterActivity extends Activity
 
 		Spinner from_spinner = (Spinner)findViewById(R.id.from_currency_spinner);
 		Spinner to_spinner = (Spinner)findViewById(R.id.to_currency_spinner);
+
+		int usd_idx = java.util.Arrays.binarySearch(currency_abbrevs, "USD");
+
 		from_spinner.setAdapter(adapter);
 		from_spinner.setOnItemSelectedListener(this);
+		if (usd_idx != -1)
+			from_spinner.setSelection(usd_idx);
 		to_spinner.setAdapter(adapter);
 		to_spinner.setOnItemSelectedListener(this);
+		if (usd_idx != -1)
+			to_spinner.setSelection(usd_idx);
 
 		// Initialize callback for the numberic input field
 		EditText edit_text = (EditText)findViewById(R.id.currency_converter_edit_text);
@@ -69,6 +104,135 @@ public class CurrencyConverterActivity extends Activity
 		this.from_currency_idx = -1;
 		this.to_currency_idx = -1;
 		this.cur_amount_valid = false;
+
+		// Show the exchange rates for the most recently converted currencies
+		load_recent_currencies();
+	}
+
+	// Pause the activity, saving the list of recent currencies.
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (recent_currencies != null) {
+			SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.clear();
+			for (int i = 0; i < recent_currencies.size(); i++) {
+				String key = "recent_currency_" + i;
+				RecentCurrency cur = recent_currencies.get(i);
+				editor.putString(key, cur.abbrev);
+			}
+			editor.apply();
+		}
+	}
+
+	// Load the recently converted currencies from the preferences.
+	private void load_recent_currencies() {
+		this.recent_currency_textviews = new TextView[NUM_RECENT_CURRENCIES];
+		
+		this.recent_currency_textviews[0] = (TextView)findViewById(R.id.recent_currency_1);
+		this.recent_currency_textviews[1] = (TextView)findViewById(R.id.recent_currency_2);
+		this.recent_currency_textviews[2] = (TextView)findViewById(R.id.recent_currency_3);
+
+		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+		this.recent_currencies = new ArrayList<RecentCurrency>();
+		
+		for (int i = 0; i < NUM_RECENT_CURRENCIES; i++) {
+			String abbrev = prefs.getString("recent_currency_" + i, null);
+			if (abbrev != null) {
+				int abbrev_idx = -1;
+				for (int j = 0; j < currency_abbrevs.length; j++) {
+					if (currency_abbrevs[j].equals(abbrev)) {
+						Log.d(TAG, "Loaded recent currency " + abbrev);
+						abbrev_idx = j;
+						break;
+					}
+				}
+				if (abbrev_idx != -1) {
+					this.recent_currencies.add(new RecentCurrency(abbrev, abbrev_idx));
+				}
+			}
+		}
+
+		for (RecentCurrency cur : recent_currencies) {
+			Message msg = Message.obtain();
+			msg.obj = cur.abbrev;
+			msg.what = CurrencyRatesManager.MSG_NEED_CURRENCY_RATE;
+			msg.arg1 = cur.abbrev_idx;
+			msg.arg2 = NEED_RATE_FOR_LAST_CURRENCY_LIST;
+			rates_manager.getHandler().sendMessage(msg);
+		}
+
+		update_recent_rates();
+	}
+
+	// Update the TextViews that show the rates of the recently converted
+	// currencies.
+	private void update_recent_rates() {
+		for (int i = 0; i < NUM_RECENT_CURRENCIES; i++) {
+			String txt;
+			if (i < recent_currencies.size()) {
+				RecentCurrency cur = recent_currencies.get(i);
+				txt = "USD per " + cur.abbrev + ": ";
+
+				if (cur.rate == null)
+					txt += "waiting...";
+				else
+					txt += cur.rate.usd_equivalent;
+			} else {
+				txt = "";
+			}
+			recent_currency_textviews[i].setText(txt);
+		}
+	}
+
+
+	private void push_recent_rate(String abbrev, int abbrev_idx) {
+
+		// If the currency is already in the recent currencies list, move it to
+		// the front of the list.
+		for (int i = 0; i < recent_currencies.size(); i++) {
+			RecentCurrency cur = recent_currencies.get(i);
+			if (cur.abbrev.equals(abbrev)) {
+				Log.d(TAG, abbrev + " is already in the recent currencies list");
+				if (i != 0) {
+					Log.d(TAG, "Moving currency " + abbrev + " from slot " + i + " to "
+							   + "slot 0 in the rucent currencies list");
+					recent_currencies.remove(i);
+					recent_currencies.add(0, cur);
+					update_recent_rates();
+				}
+				return;
+			}
+		}
+
+		// Currency is not in the recent currencies list.  Add it to the list,
+		// possibly after deleting the last currency in the list.
+		
+
+		RecentCurrency oldest;
+		if (NUM_RECENT_CURRENCIES == recent_currencies.size()) {
+			oldest = recent_currencies.get(NUM_RECENT_CURRENCIES - 1);
+			Log.d(TAG, "Deleting currency " + oldest.abbrev + " from the recent currencies list");
+			recent_currencies.remove(NUM_RECENT_CURRENCIES - 1);
+		} else {
+			oldest = new RecentCurrency();
+		}
+		Log.d(TAG, "Adding currency " + abbrev + " to the front of the recent currencies list");
+
+		oldest.abbrev = abbrev;
+		oldest.abbrev_idx = abbrev_idx;
+		oldest.rate = null;
+		recent_currencies.add(0, oldest);
+
+		Message msg = Message.obtain();
+		msg.obj = abbrev;
+		Log.d(TAG, "Sending message MSG_NEED_CURRENCY_RATE (" + abbrev + ")");
+		msg.what = CurrencyRatesManager.MSG_NEED_CURRENCY_RATE;
+		msg.arg1 = abbrev_idx;
+		msg.arg2 = NEED_RATE_FOR_LAST_CURRENCY_LIST;
+		rates_manager.getHandler().sendMessage(msg);
+		update_recent_rates();
 	}
 
 	// Given a list of currency abbreviations, load their full localized names.
@@ -106,20 +270,37 @@ public class CurrencyConverterActivity extends Activity
 
 	// Process a message received from the CurrencyRatesManager thread.
 	public boolean handleMessage(Message msg) {
+		int currency_idx;
 		switch (msg.what) {
 		case CurrencyRatesManager.MSG_HAVE_CURRENCY_RATE:
-			// Received a currency rate (it may or may not be outdated.)
-			// Possibly do a conversion.
 			ExchangeRate r = (ExchangeRate)msg.obj;
 			Log.d(TAG, "Received message MSG_HAVE_CURRENCY_RATE (" + r.abbrev + ")");
-			int currency_idx = msg.arg1;
-			if (currency_idx == from_currency_idx) {
-				from_exchange_rate = r;
+			switch (msg.arg2) {
+			case NEED_RATE_FOR_CONVERSION:
+				// Received a currency rate (it may or may not be outdated.)
+				// Possibly do a conversion.
+				currency_idx = msg.arg1;
+				if (currency_idx == from_currency_idx) {
+					from_exchange_rate = r;
+				}
+				if (currency_idx == to_currency_idx) {
+					to_exchange_rate = r;
+				}
+				maybe_do_outdated_conversion();
+				break;
+			case NEED_RATE_FOR_LAST_CURRENCY_LIST:
+				// Received a currency rate for something in the recent
+				// currencies last.
+				currency_idx = msg.arg1;
+				for (RecentCurrency cur : recent_currencies) {
+					if (cur.abbrev_idx == currency_idx) {
+						cur.rate = r;
+						update_recent_rates();
+						break;
+					}
+				}
+				break;
 			}
-			if (currency_idx == to_currency_idx) {
-				to_exchange_rate = r;
-			}
-			maybe_do_outdated_conversion();
 			break;
 		}
 		return true;
@@ -141,12 +322,10 @@ public class CurrencyConverterActivity extends Activity
 
 		if (to_exchange_rate.usd_equivalent <= 0.0) {
 			Log.e(TAG, "Error: Currency " + from_exchange_rate.abbrev + " is worth 0 or less!");
-			// XXX
-			result = "DIVIDE BY ZERO";
+			result = "Rate for " + to_exchange_rate.abbrev + " not available";
 		} else if (from_exchange_rate.usd_equivalent <= 0.0) {
-			Log.e(TAG, "Error: Currency " + to_exchange_rate.abbrev + " is worth 0 or less!");
-			// XXX
-			result = "DIVIDE BY ZERO";
+			Log.e(TAG, "Error: Currency " + from_exchange_rate.abbrev + " is worth 0 or less!");
+			result = "Rate for " + from_exchange_rate.abbrev + " not available";
 		} else {
 			double to_from_ratio = to_exchange_rate.usd_equivalent /
 								   from_exchange_rate.usd_equivalent;
@@ -184,6 +363,7 @@ public class CurrencyConverterActivity extends Activity
 			msg = Message.obtain();
 			msg.what = CurrencyRatesManager.MSG_NEED_CURRENCY_RATE;
 			msg.arg1 = from_currency_idx;
+			msg.arg2 = NEED_RATE_FOR_CONVERSION;
 			msg.obj = currency_abbrevs[from_currency_idx];
 			rates_manager.getHandler().sendMessage(msg);
 			conversion_possible_now = false;
@@ -194,6 +374,7 @@ public class CurrencyConverterActivity extends Activity
 			msg = Message.obtain();
 			msg.what = CurrencyRatesManager.MSG_NEED_CURRENCY_RATE;
 			msg.arg1 = to_currency_idx;
+			msg.arg2 = NEED_RATE_FOR_CONVERSION;
 			msg.obj = currency_abbrevs[to_currency_idx];
 			rates_manager.getHandler().sendMessage(msg);
 			conversion_possible_now = false;
@@ -210,6 +391,7 @@ public class CurrencyConverterActivity extends Activity
 	// Callback when a "from" or "to" currency is selected.
 	public void onItemSelected(AdapterView<?> parent, View view,
 							   int position, long id) {
+		push_recent_rate(currency_abbrevs[position], position);
 		if (parent.getId() == R.id.from_currency_spinner) {
 			Log.d(TAG, "Selected \"from\" currency idx " + position + " (" +
 						currency_abbrevs[position] + ")");

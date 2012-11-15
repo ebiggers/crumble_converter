@@ -65,7 +65,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 
 	// Helper class to create the database if it doesn't already exist.
 	private static class CurrencyDBOpenHelper extends SQLiteOpenHelper {
-		private static final int DATABASE_VERSION = 5;
+		private static final int DATABASE_VERSION = 6;
 		private static final String DATABASE_NAME = "currencies.db";
 		private static final String CURRENCY_TABLE = "currency";
 		CurrencyDBOpenHelper(Context context) {
@@ -141,10 +141,12 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 				String abbreviation = cur.getString(abbreviation_idx);
 				double usd_equivalent = cur.getDouble(usd_equivalent_idx);
 				long last_updated = cur.getLong(last_updated_idx);
-                Log.d(TAG, "Loaded (" + abbreviation + ", " + usd_equivalent +
-                      ", " + last_updated + ")");
-				ExchangeRate r = new ExchangeRate(usd_equivalent, last_updated, true);
-				exchange_rates.put(abbreviation, r);
+                if (!abbreviation.equals("USD")) {
+                    Log.d(TAG, "Loaded (" + abbreviation + ", " + usd_equivalent +
+                          ", " + last_updated + ")");
+                    ExchangeRate r = new ExchangeRate(usd_equivalent, last_updated, true);
+                    exchange_rates.put(abbreviation, r);
+                }
 				cur.moveToNext();
 			}
 		} else {
@@ -157,7 +159,9 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 	private void download_rates() throws MalformedURLException, IOException {
 		String url_str = YAHOO_URL + "?";
 		for (String abbrev : this.currency_abbreviations) {
-			url_str += "s=" + abbrev + "USD=X&";
+            if (!abbrev.equals("USD")) {
+                url_str += "s=" + abbrev + "USD=X&";
+            }
 		}
 		// format = symbol, last trade
 		url_str += "f=sl1";
@@ -212,7 +216,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		for (Map.Entry<String, ExchangeRate> entry : exchange_rates.entrySet()) {
             String s = entry.getKey();
             ExchangeRate r = entry.getValue();
-            if (r.last_updated < oldest_update) {
+            if (r.last_updated < oldest_update && !s.equals("USD")) {
                 oldest_update = r.last_updated;
                 oldest = s;
             }
@@ -241,15 +245,17 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 			for (Map.Entry<String, ExchangeRate> entry : exchange_rates.entrySet()) {
 				String abbrev = entry.getKey();
 				ExchangeRate r = entry.getValue();
-				ih.prepareForInsert();
-				ih.bind(abbreviation_col, abbrev);
-				ih.bind(usd_equivalent_col, r.usd_equivalent);
-				ih.bind(last_updated_col, r.last_updated);
+                if (!abbrev.equals("USD")) {
+                    ih.prepareForInsert();
+                    ih.bind(abbreviation_col, abbrev);
+                    ih.bind(usd_equivalent_col, r.usd_equivalent);
+                    ih.bind(last_updated_col, r.last_updated);
 
-				Log.d(TAG, "Insert: (abbreviation = " + abbrev + ", usd_equivalent = " +
-							r.usd_equivalent + ", last_updated = " + r.last_updated + ")");
+                    Log.d(TAG, "Insert: (abbreviation = " + abbrev + ", usd_equivalent = " +
+                                r.usd_equivalent + ", last_updated = " + r.last_updated + ")");
 
-				ih.execute();
+                    ih.execute();
+                }
             }
 			db.setTransactionSuccessful();
 			db.endTransaction();
@@ -291,6 +297,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 			nmsg = Message.obtain();
 			nmsg.what = MSG_TIME_TO_DOWNLOAD;
 			nmsg.arg1 = msg.arg1;
+            nmsg.arg2 = msg.arg2;
 			// In SECONDS_PER_AUTOMATIC_UPDATE seconds, do this again.
 			this.handler.sendMessageDelayed(nmsg, SECONDS_PER_AUTOMATIC_UPDATE * 1000);
 			break;
@@ -305,7 +312,9 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 			long now = new Date().getTime();
 			Log.d(TAG, "Getting exchange rate for currency " + currency_abbrev);
 			ExchangeRate r = exchange_rates.get(currency_abbrev);
-			if ((now - r.last_updated) / 1000 >= SECONDS_PER_AUTOMATIC_UPDATE) {
+			if ((now - r.last_updated) / 1000 >= SECONDS_PER_AUTOMATIC_UPDATE
+                && !currency_abbrev.equals("USD"))
+            {
 				Log.d(TAG, "Exchange rate for " + currency_abbrev +
 						   " is out of date " + "by " +
 						   (now - r.last_updated) / 1000 + " seconds!");
@@ -330,9 +339,11 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 			nmsg.what = MSG_HAVE_CURRENCY_RATE;
 			r.abbrev = currency_abbrev;
 			nmsg.arg1 = msg.arg1;
+            nmsg.arg2 = msg.arg2;
 			nmsg.obj = r;
 			Log.d(TAG, "Sending message MSG_HAVE_CURRENCY_RATE (" +
-						currency_abbrev + ")");
+						currency_abbrev + ", usd_equivalent=" +
+                        r.usd_equivalent + ")");
 			activity_handler.sendMessage(nmsg);
 			break;
 		}
@@ -356,6 +367,10 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 			this.exchange_rates.put(this.currency_abbreviations[i],
 									new ExchangeRate());
 		}
+        ExchangeRate usd = exchange_rates.get("USD");
+        usd.usd_equivalent = 1.0;
+        usd.last_updated = new Date().getTime();
+
 		// Open/create the database and load the exchange rates.
 		try {
 			Log.d(TAG, "Creating CurrencyDBOpenHelper");
