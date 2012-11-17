@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callback {
-	private final String[] currency_abbreviations = {
+	private static final String[] currency_abbreviations = {
 		"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN",
 		"BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL",
 		"BSD", "BTN", "BWP", "BYR", "BZD", "CAD", "CDF", "CHF", "CLP", "CNY",
@@ -43,6 +43,10 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 		"UZS", "VEF", "VND", "VUV", "WST", "XAF", "XCD", "XDR", "XOF", "XPF",
 		"YER", "ZAR", "ZMK", "ZWD",
 	};
+
+	static {
+		java.util.Arrays.sort(currency_abbreviations);
+	}
 
 	private static final int SECONDS_PER_AUTOMATIC_UPDATE = 3600;
 	private static final String YAHOO_URL = "http://download.finance.yahoo.com/d/quotes.csv";

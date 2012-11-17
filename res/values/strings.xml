@@ -33,6 +33,11 @@
     <string name="calculator_title">Calculator</string>
     <string name="main_activity_title">Crumble Converter</string>
 
+    <!-- Currency converter text labels -->
+    <string name="from_currency_label">From currency:</string>
+    <string name="from_currency_amount_label">From amount (default 1):</string>
+    <string name="to_currency_label">To currency:</string>
+
     <!-- Currency names -->
     <string name="AED">United Arab Emirates Dirham</string>
     <string name="AFN">Afghanistan Afghani</string>
