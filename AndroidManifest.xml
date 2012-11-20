@@ -32,6 +32,10 @@
             android:name=".CalculatorActivity"
             android:label="@string/calculator_title" >
         </activity>
+        <activity
+            android:name=".MetricPrefixesListActivity"
+            android:label="@string/prefix_activity_title" >
+        </activity>
     </application>
 
 </manifest>

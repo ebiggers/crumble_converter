@@ -39,6 +39,7 @@ public class UnitCategoryChooserActivity extends Activity
 		listenForClickOn(R.id.force_button);
 		listenForClickOn(R.id.pressure_button);
 		listenForClickOn(R.id.speed_button);
+		listenForClickOn(R.id.prefixes_button);
 	}
 
 	public void onClick(View v)
@@ -93,6 +94,11 @@ public class UnitCategoryChooserActivity extends Activity
 		case R.id.volume_button:
 			category = "volume";
 			break;
+		case R.id.prefixes_button:
+			Intent i = new Intent(this, MetricPrefixesListActivity.class);
+			Log.d(TAG, "Starting MetricPrefixesListActivity");
+			startActivity(i);
+			return;
 		default:
 			Log.e(TAG, "Unimplemented button!");
 			category = "";

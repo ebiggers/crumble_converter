@@ -32,6 +32,7 @@
     <string name="unit_converter_title">Units</string>
     <string name="calculator_title">Calculator</string>
     <string name="main_activity_title">Crumble Converter</string>
+    <string name="prefix_activity_title">Metric Prefixes</string>
 
     <!-- Currency converter text labels -->
     <string name="from_currency_label">From currency:</string>
