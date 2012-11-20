@@ -330,7 +330,7 @@
 	<string name="astronomical_units">Astonomical units</string>
 	<string name="light_years">Light years</string>
 	<string name="light_seconds">Light seconds</string>
-	<string name="planck_lengths">Plank lengths</string>
+	<string name="planck_lengths">Planck lengths</string>
 	<string name="ounces">Ounces</string>
 	<string name="pounds">Pounds</string>
 	<string name="tons">Tons</string>
@@ -360,7 +360,7 @@
 	<string name="weeks">Weeks</string>
 	<string name="months">Months</string>
 	<string name="years">Years</string>
-	<string name="planck_times">Plank times</string>
+	<string name="planck_times">Planck times</string>
 	<string name="picoseconds">Picoseconds</string>
 	<string name="nanoseconds">Nanoseconds</string>
 	<string name="lunar_months">Lunar months</string>
@@ -471,7 +471,7 @@
 <string name="weeks.abbrev">wk</string>
 <string name="months.abbrev">mo</string>
 <string name="years.abbrev">yr</string>
-<string name="planck_times.abbrev">Plank time</string>
+<string name="planck_times.abbrev">Planck time</string>
 <string name="picoseconds.abbrev">Ps</string>
 <string name="nanoseconds.abbrev">ns</string>
 <string name="lunar_months.abbrev">mo</string>
