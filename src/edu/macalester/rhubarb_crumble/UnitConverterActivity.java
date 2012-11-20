@@ -151,8 +151,6 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		String unit2 = this.units.get(unitInputIndex2).getLocalizedName();
 		
 		Log.d(TAG, "Converting " + amount + " from " + unit1 + " to " + unit2);
-		Log.d(TAG, "Input rate 1: " + this.inputRate1);
-		Log.d(TAG, "Input rate 2: " + this.inputRate2);
 		
 		Double resultAmount = 0.0;
 		
@@ -168,7 +166,6 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 			} else if (unit1.equalsIgnoreCase("celsius")) {
 				if (unit2.equalsIgnoreCase("fahrenheit")) {
 					resultAmount = (amount * (9/5.0)) + 32;
-					Log.d(TAG, "celsius to fahrenheit");
 				} else if (unit2.equalsIgnoreCase("kelvin")) {
 					resultAmount = amount + 273.15;
 				}
@@ -184,7 +181,6 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		}
 		
 		String result = Double.toString(resultAmount);
-		Log.d(TAG, "Conversion result: " + result);
 		setConversionOutput(result);
 	}
 
