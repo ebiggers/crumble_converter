@@ -17,8 +17,19 @@ import android.widget.TextView;
 
 public class UnitConverterActivity extends Activity implements OnItemSelectedListener, TextWatcher {
 
-	private ArrayList<Unit> units;
 	private static final String TAG = "UnitConverterActivity";
+	
+	private ArrayList<Unit> units;
+	private String[] unitAbbrevs;
+	
+	private double inputAmount;
+	private boolean inputValid;
+	
+	private int unitInputIndex1;
+	private int unitInputIndex2;
+	
+	private double inputRate1;
+	private double inputRate2;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,11 +42,14 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		String category = getIntent().getStringExtra("category");
 		
 		this.units = UnitManager.getUnits(category, this, 1);
-		String[] unitNames = this.units.toString().split(",");
+		String[] unitNames = new String[this.units.size()];
+		this.unitAbbrevs = new String[this.units.size()];
 		
-		Log.d(TAG, "Unit names: ");
-		for(String unitName : unitNames) {
-			Log.d(TAG, unitName);
+		int i = 0;
+		for(Unit unit : this.units) {
+			unitNames[i] = unit.getLocalizedName();
+			this.unitAbbrevs[i] = unit.getLocalizedAbbreviation();
+			i++;
 		}
 		
 		//Initialize the unit selector spinners
@@ -53,6 +67,10 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		// Initialize callback for the numeric input field
 		EditText edit_text = (EditText)findViewById(R.id.unitAmount);
 		edit_text.addTextChangedListener(this);
+		
+		// Initialize text output
+		setConversionOutput("");
+		this.inputValid = false;
 	}
 	
 	// Set the text in the converter output field.
@@ -61,9 +79,21 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		v.setText(s);
 	}
 
-	public void afterTextChanged(Editable arg0) {
-		// TODO Auto-generated method stub
-		
+	public void afterTextChanged(Editable amount) {
+		if (amount.length() == 0) {
+			this.inputValid = false;
+		} else {
+			String text = amount.toString();
+			try {
+				this.inputAmount = Double.parseDouble(text);
+				this.inputValid = true;
+				Log.d(TAG, "Current amount updated to: " + this.inputAmount);
+				doConversion();
+			} catch (NumberFormatException e) {
+				this.inputValid = false;
+				Log.d(TAG, text + " could not be converted to a double");
+			}
+		}
 	}
 
 	public void beforeTextChanged(CharSequence s, int start, int count,
@@ -77,10 +107,51 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		
 	}
 
-	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
-		// TODO Auto-generated method stub
+	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {		
+		if (parent.getId() == R.id.unitInput1) {
+			Log.d(TAG, "Selected \"from\" unit index " + position + " (" +
+						unitAbbrevs[position] + ")");
+			if (unitInputIndex1 != position) {
+				unitInputIndex1 = position;
+				this.inputRate1 = this.units.get(unitInputIndex1).getNormalizedValue();
+			} else {
+				Log.d(TAG, unitAbbrevs[position] + " already selected; no conversion done.");
+				return;
+			}
+		} else {
+			Log.d(TAG, "Selected \"to\" currency idx " + position + " (" +
+						unitAbbrevs[position] + ")");
+			if (unitInputIndex2 != position) {
+				unitInputIndex2 = position;
+				this.inputRate2 = this.units.get(unitInputIndex2).getNormalizedValue();
+			} else {
+				Log.d(TAG, unitAbbrevs[position] + " already selected; no conversion done.");
+				return;
+			}
+		}
+		doConversion();
+	}
+	
+	public void doConversion() {
+		Double amount;
+		if (this.inputValid)
+			amount = this.inputAmount;
+		else
+			amount = 1.0;
 		
+		String unit1 = this.units.get(unitInputIndex1).getLocalizedName();
+		String unit2 = this.units.get(unitInputIndex2).getLocalizedName();
+		
+		Log.d(TAG, "Converting " + amount + " from " + unit1 + " to " + unit2);
+		Log.d(TAG, "Input rate 1: " + this.inputRate1);
+		Log.d(TAG, "Input rate 2: " + this.inputRate2);
+		
+		Double resultAmount = amount * (this.inputRate1 / this.inputRate2);
+		Log.d(TAG, "Input*: " + Double.toString(this.inputRate1 / this.inputRate2));
+		
+		String result = Double.toString(resultAmount);
+		
+		setConversionOutput(result);
 	}
 
 	public void onNothingSelected(AdapterView<?> arg0) {
