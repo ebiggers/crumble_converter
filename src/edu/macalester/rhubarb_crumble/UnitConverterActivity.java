@@ -73,6 +73,12 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		// Initialize text output
 		setConversionOutput("");
 		this.inputValid = false;
+		
+		//Initialize conversion rates
+		this.unitInputIndex1 = inputSpinner.getSelectedItemPosition();
+		this.unitInputIndex2 = outputSpinner.getSelectedItemPosition();
+		this.inputRate1 = this.units.get(this.unitInputIndex1).getNormalizedValue();
+		this.inputRate2 = this.units.get(this.unitInputIndex2).getNormalizedValue();
 	}
 	
 	// Set the text in the converter output field.
