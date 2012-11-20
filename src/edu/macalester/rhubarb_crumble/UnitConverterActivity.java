@@ -31,6 +31,8 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 	private double inputRate1;
 	private double inputRate2;
 	
+	String category;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,9 +41,9 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		setContentView(R.layout.unit_converter);
 		
 		// Get the selected category from the UnitCategoryChooser and get the units associated with that category
-		String category = getIntent().getStringExtra("category");
+		this.category = getIntent().getStringExtra("category");
 		
-		this.units = UnitManager.getUnits(category, this, 1);
+		this.units = UnitManager.getUnits(this.category, this, 1);
 		String[] unitNames = new String[this.units.size()];
 		this.unitAbbrevs = new String[this.units.size()];
 		
@@ -146,11 +148,37 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		Log.d(TAG, "Input rate 1: " + this.inputRate1);
 		Log.d(TAG, "Input rate 2: " + this.inputRate2);
 		
-		Double resultAmount = amount * (this.inputRate1 / this.inputRate2);
-		Log.d(TAG, "Input*: " + Double.toString(this.inputRate1 / this.inputRate2));
+		Double resultAmount = 0.0;
+		
+		if (this.category.equalsIgnoreCase("temperature")) {
+			if (unit1.equalsIgnoreCase(unit2)) {
+				resultAmount = amount;
+			} else if (unit1.equalsIgnoreCase("fahrenheit")) {
+				if (unit2.equalsIgnoreCase("celsius")) {
+					resultAmount = (amount - 32) * (5/9.0);
+				} else if (unit2.equalsIgnoreCase("kelvin")) {
+					resultAmount = (amount - 32) * (5/9.0) + 273.15;
+				}
+			} else if (unit1.equalsIgnoreCase("celsius")) {
+				if (unit2.equalsIgnoreCase("fahrenheit")) {
+					resultAmount = (amount * (9/5.0)) + 32;
+					Log.d(TAG, "celsius to fahrenheit");
+				} else if (unit2.equalsIgnoreCase("kelvin")) {
+					resultAmount = amount + 273.15;
+				}
+			} else if (unit1.equalsIgnoreCase("kelvin")) {
+				if (unit2.equalsIgnoreCase("fahrenheit")) {
+					resultAmount = ((amount - 273.15) * 1.8) + 32;
+				} else if (unit2.equalsIgnoreCase("celsius")) {
+					resultAmount = amount - 273.15;
+				}
+			}
+		} else {
+			resultAmount = amount * (this.inputRate1 / this.inputRate2);
+		}
 		
 		String result = Double.toString(resultAmount);
-		
+		Log.d(TAG, "Conversion result: " + result);
 		setConversionOutput(result);
 	}
 

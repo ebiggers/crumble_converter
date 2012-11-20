@@ -1,4 +1,4 @@
 #this is difficult because more variables are required
-fahrenheit          ,
-celsius             ,
-kelvin              ,
+fahrenheit, 0, 0
+celsius, 0, 0
+kelvin, 0, 0

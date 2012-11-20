@@ -381,6 +381,9 @@
 	<string name="fluid_ounces">Fluid ounces</string>
 	<string name="liters">Liters</string>
 	<string name="milliliters">Milliliters</string>
+	<string name="fahrenheit">Fahrenheit</string>
+	<string name="celsius">Celsius</string>
+	<string name="kelvin">Kelvin</string>
 	
 	<!-- Unit Abbreviations -->
 	<string name="degrees.abbrev">°</string>
@@ -492,5 +495,8 @@
 <string name="fluid_ounces.abbrev">fl oz</string>
 <string name="liters.abbrev">L</string>
 <string name="milliliters.abbrev">mL</string>
+<string name="fahrenheit.abbrev">F</string>
+<string name="celsius.abbrev">C</string>
+<string name="kelvin.abbrev">K</string>
 
 </resources>
