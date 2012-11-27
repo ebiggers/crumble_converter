@@ -158,7 +158,7 @@ public class CurrencyConverterActivity extends Activity
 				RecentCurrency cur = recent_currencies.get(i);
 				editor.putString(key, cur.abbrev);
 			}
-			editor.apply();
+			editor.commit();
 		}
 	}
 
