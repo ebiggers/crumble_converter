@@ -17,31 +17,60 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+// The activity that runs when the user is converting units within a specific
+// unit category.
 public class UnitConverterActivity extends Activity implements
 			OnItemSelectedListener, TextWatcher, OnClickListener
 {
 	private static final String TAG = "UnitConverterActivity";
 
+	// The full list of units, including those that are shown when the "Show
+	// additional units" box is checked.
 	private ArrayList<Unit> units;
-	private ArrayList<Unit> unitSubset;
-	private String[] unitAbbrevs;
 
+	// The list of units that are shown when the "Show additional units" box is
+	// not checked.
+	private ArrayList<Unit> unitSubset;
+
+	// Adapter to provide a Spinner with the full list of units.
 	private ArrayAdapter unitAdapter;
+
+	// Adapter to provide a Spinner with only the units in @unitSubset.
 	private ArrayAdapter unitSubsetAdapter;
+
+	// Spinner for the input unit.
 	private Spinner inputSpinner;
+
+	// Spinner for the output unit.
 	private Spinner outputSpinner;
 
+	// The current amount entered in the unit amount input field, and whether it
+	// is currently valid or not.
 	private double inputAmount;
 	private boolean inputValid;
 
-	private int unitInputIndex1;
-	private int unitInputIndex2;
-
-	private double inputRate1;
-	private double inputRate2;
-
+	// true when the "Show Additional Units" box is checked.
 	private boolean additional_units_shown;
 
+	// The index of the "from" unit that is currently selected, within @units
+	// (when additional_units_shown) or within @unitSubset (when
+	// !additional_units_shown).  -1 if no unit currently selected.
+	private int unitInputIndex1;
+
+	// The index of the "to" unit that is currently selected, within @units
+	// (when additional_units_shown) or within @unitSubset (when
+	// !additional_units_shown).  -1 if no unit currently selected.
+	private int unitInputIndex2;
+
+	// The normalized value (relative to some canonical unit) of the currently
+	// selected "from" unit, or -1.0 if no "from" unit is currently selected.
+	private double inputRate1;
+
+	// The normalized value (relative to some canonical unit) of the currently
+	// selected "to" unit, or -1.0 if no "to" unit is currently selected.
+	private double inputRate2;
+
+	// The category of units being converted (such as "length" or "temperature")
 	String category;
 
 	@Override
@@ -51,57 +80,59 @@ public class UnitConverterActivity extends Activity implements
 		// Set the view to unit_converter.xml
 		setContentView(R.layout.unit_converter);
 
-		// Get the selected category from the UnitCategoryChooser and get the units associated with that category
+		// Get the selected category from the UnitCategoryChooser and get the
+		// units associated with that category
 		this.category = getIntent().getStringExtra("category");
 
+		// Set up the full list of units and their names, and an adapter for
+		// showing them
 		this.units = UnitManager.getUnits(this.category, this, 1);
 		String[] unitNames = new String[this.units.size()];
 		for (int i = 0; i < this.units.size(); i++)
 			unitNames[i] = units.get(i).getLocalizedName();
+		unitAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, unitNames);
+		unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-		this.unitAbbrevs = new String[this.units.size()];
-
+		// Set up the subset of more common units and their namnes, and an
+		// adapter for showing them
 		this.unitSubset = UnitManager.getUnits(this.category, this, 0);
 		String[] unitSubsetNames = new String[this.unitSubset.size()];
 		for (int i = 0; i < this.unitSubset.size(); i++)
 			unitSubsetNames[i] = unitSubset.get(i).getLocalizedName();
-
-		//Initialize the unit selector spinners
-		unitAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, unitNames);
-		unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
 		unitSubsetAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, unitSubsetNames);
 		unitSubsetAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+		// Initialize the "from" and "to" unit selector spinners.  They
+		// initially show only the subset of more common units.
 		inputSpinner = (Spinner) findViewById(R.id.unitInput1);
 		outputSpinner = (Spinner) findViewById(R.id.unitInput2);
-
 		inputSpinner.setAdapter(unitSubsetAdapter);
 		outputSpinner.setAdapter(unitSubsetAdapter);
-
 		inputSpinner.setOnItemSelectedListener(this);
 		outputSpinner.setOnItemSelectedListener(this);
 
-		// Initialize callback for the numeric input field
+		// Initialize the callback for when the numeric input field is edited.
 		EditText edit_text = (EditText)findViewById(R.id.unitAmount);
 		edit_text.addTextChangedListener(this);
-
-		// Initialize text output
-		setConversionOutput("");
 		this.inputValid = false;
 
+		// Initially, no output is shown.
+		setConversionOutput("");
 
-		//Setup checkbox listener
+		// Initially, additional units are not shown; set up the checkbox
+		// listener so that the user can change this.
 		CheckBox addUnits = (CheckBox) findViewById(R.id.addUnitsCheckBox);
 		addUnits.setChecked(false);
 		additional_units_shown = false;
 		addUnits.setOnClickListener(this);
 
-		//Initialize conversion rates
-		this.unitInputIndex1 = inputSpinner.getSelectedItemPosition();
-		this.unitInputIndex2 = outputSpinner.getSelectedItemPosition();
-		this.inputRate1 = getUnit(this.unitInputIndex1).getNormalizedValue();
-		this.inputRate2 = getUnit(this.unitInputIndex2).getNormalizedValue();
+		// Initially, no units are selected (actually, the spinner will default
+		// to the first selection, but this will be handled in the
+		// onItemSelected() callback.)
+		this.unitInputIndex1 = -1;
+		this.unitInputIndex2 = -1;
+		this.inputRate1 = -1.0;
+		this.inputRate2 = -1.0;
 	}
 
 	// Set the text in the converter output field.
@@ -110,10 +141,14 @@ public class UnitConverterActivity extends Activity implements
 		v.setText(s);
 	}
 
+	// Called after the text in the "from" unit amount field is edited.
 	public void afterTextChanged(Editable amount) {
 		if (amount.length() == 0) {
+			// If no text is entered, the input is invalid.
 			this.inputValid = false;
 		} else {
+			// If text is entered, it is valid only if it can be interpreted as
+			// a double.
 			String text = amount.toString();
 			try {
 				this.inputAmount = Double.parseDouble(text);
@@ -129,15 +164,13 @@ public class UnitConverterActivity extends Activity implements
 
 	public void beforeTextChanged(CharSequence s, int start, int count,
 			int after) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		// TODO Auto-generated method stub
-
 	}
 
+	// Return the unit at index @index, taking into account whether additional
+	// units are currently shown or not.
 	private Unit getUnit(int index)
 	{
 		if (additional_units_shown)
@@ -146,6 +179,8 @@ public class UnitConverterActivity extends Activity implements
 			return unitSubset.get(index);
 	}
 
+	// Translates an index into the unit subset into an index into the list of
+	// full units.
 	private int subsetToAdditionalIndex(int idx) {
 		if (idx == -1)
 			return -1;
@@ -156,6 +191,9 @@ public class UnitConverterActivity extends Activity implements
 		return -1;
 	}
 
+	// Translates an index into the list of full units into an index into the
+	// list of units in the unit subset.  Return -1 if the unit is not available
+	// in the subset.
 	private int additionalToSubsetIndex(int idx) {
 		if (idx == -1)
 			return -1;
@@ -166,11 +204,15 @@ public class UnitConverterActivity extends Activity implements
 		return -1;
 	}
 
+	// Called when the user checks or unchecks the "Show additional units"
+	// checkbox.
 	public void onClick(View v) {
 		switch(v.getId()) {
 		case R.id.addUnitsCheckBox:
 			if (((CheckBox)v).isChecked()) {
 				if (!additional_units_shown) {
+					// Show the additional units.  Keep the spinners on the same
+					// units, even though their indices may have changed.
 					additional_units_shown = true;
 					this.unitInputIndex1 = subsetToAdditionalIndex(this.unitInputIndex1);
 					this.unitInputIndex2 = subsetToAdditionalIndex(this.unitInputIndex2);
@@ -181,6 +223,10 @@ public class UnitConverterActivity extends Activity implements
 				}
 			} else {
 				if (additional_units_shown) {
+					// Hide the additional units.  Keep each spinner on the same
+					// unit if the selected unit is still available in the unit
+					// subset; otherwise, set it to be on the first unit in the
+					// list.
 					additional_units_shown = false;
 					this.unitInputIndex1 = additionalToSubsetIndex(this.unitInputIndex1);
 					this.unitInputIndex2 = additionalToSubsetIndex(this.unitInputIndex2);
@@ -201,28 +247,34 @@ public class UnitConverterActivity extends Activity implements
 	}
 
 
+	// Called when a different unit has been selected in the "from" or "to" unit
+	// spinners.
 	public void onItemSelected(AdapterView<?> parent, View view,
 							   int position, long id)
 	{
 		switch (parent.getId()) {
 		case R.id.unitInput1:
-			Log.d(TAG, "Selected \"from\" unit index " + position + " (" +
-						unitAbbrevs[position] + ")");
+			// The "from" unit has been changed.
 			unitInputIndex1 = position;
 			inputRate1 = getUnit(position).getNormalizedValue();
 			break;
 		case R.id.unitInput2:
-			Log.d(TAG, "Selected \"to\" unit idx " + position + " (" +
-						unitAbbrevs[position] + ")");
+			// The "to" unit has been changed.
 			unitInputIndex2 = position;
 			inputRate2 = getUnit(unitInputIndex2).getNormalizedValue();
 			break;
 		}
+
+		// If something is selected in both spinners, make a unit conversion.
 		if (this.unitInputIndex1 != -1 && this.unitInputIndex2 != -1)
 			doConversion();
 	}
 
+	// Make a conversion
 	public void doConversion() {
+
+		// If the amount entered in the numeric input field is invalid, default
+		// to 1.
 		Double amount;
 		if (this.inputValid)
 			amount = this.inputAmount;
@@ -237,6 +289,9 @@ public class UnitConverterActivity extends Activity implements
 		Double resultAmount = 0.0;
 
 		if (this.category.equalsIgnoreCase("temperature")) {
+			// Handle temperature as a special case, because the different
+			// temperature scales are offset from each other and this is not yet
+			// represented in the unit category configuration files.
 			if (unit1.equalsIgnoreCase(unit2)) {
 				resultAmount = amount;
 			} else if (unit1.equalsIgnoreCase("fahrenheit")) {
@@ -259,13 +314,17 @@ public class UnitConverterActivity extends Activity implements
 				}
 			}
 		} else {
+			// Actually make a conversion!
 			resultAmount = amount * (this.inputRate1 / this.inputRate2);
 		}
 
+		// Set the result of the conversion.
 		String result = Double.toString(resultAmount);
 		setConversionOutput(result);
 	}
 
+	// Called when nothing is currently selected in either the "from" or "to"
+	// unit spinners.
 	public void onNothingSelected(AdapterView<?> parent) {
 		switch (parent.getId()) {
 		case R.id.unitInput1:
