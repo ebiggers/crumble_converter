@@ -350,7 +350,7 @@
 	<string name="kilometers_per_hour">Kilometers per hour</string>
 	<string name="feet_per_second">Feet per second</string>
 	<string name="meters_per_second">Meters per second</string>
-	<string name="mach">Mach</string>
+	<string name="mach">Mach number</string>
 	<string name="speed_of_light">Speed of light</string>
 	<string name="milliseconds">Milliseconds</string>
 	<string name="seconds">Seconds</string>
