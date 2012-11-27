@@ -1,7 +1,7 @@
 #all numbers measured in meters_per_second.
 miles_per_hour      , 0.447             , 0
 kilometers_per_hour , 0.2777778         , 0
-feet_per_second     , 0.3048            , 1
-meters_per_second   , 1                 , 1
-mach                , 320               , 0
+feet_per_second     , 0.3048            , 0
+meters_per_second   , 1                 , 0
+mach                , 320               , 1
 speed_of_light      , 299792458         , 1
