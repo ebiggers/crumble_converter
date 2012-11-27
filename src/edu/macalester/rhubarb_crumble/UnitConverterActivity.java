@@ -30,8 +30,6 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 	private Spinner inputSpinner;
 	private Spinner outputSpinner;
 	
-	private boolean additionalUnitsSelected;
-	
 	private double inputAmount;
 	private boolean inputValid;
 	
@@ -54,22 +52,16 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		this.category = getIntent().getStringExtra("category");
 		
 		this.units = UnitManager.getUnits(this.category, this, 1);
-		this.unitSubset = UnitManager.getUnits(this.category, this, 0);
-		
 		String[] unitNames = new String[this.units.size()];
-		String[] unitSubsetNames = new String[this.unitSubset.size()];
-		
+		for (int i = 0; i < this.units.size(); i++)
+			unitNames[i] = units.get(i).getLocalizedName();
+
 		this.unitAbbrevs = new String[this.units.size()];
-		
-		int i = 0;
-		for(Unit unit : this.units) {
-			int visibility = unit.getVisibilityLevel();
-			unitNames[i] = unit.getLocalizedName();
-			this.unitAbbrevs[i] = unit.getLocalizedAbbreviation();
-			if (visibility == 0)
-				unitSubsetNames[i] = unit.getLocalizedName();
-			i++;
-		}
+
+		this.unitSubset = UnitManager.getUnits(this.category, this, 0);
+		String[] unitSubsetNames = new String[this.unitSubset.size()];
+		for (int i = 0; i < this.unitSubset.size(); i++)
+			unitSubsetNames[i] = unitSubset.get(i).getLocalizedName();
 		
 		//Initialize the unit selector spinners
 		unitAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, unitNames);
@@ -82,9 +74,9 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		outputSpinner = (Spinner) findViewById(R.id.unitInput2);
 		
 		inputSpinner.setAdapter(unitSubsetAdapter);
-		inputSpinner.setOnItemSelectedListener(this);
-		
 		outputSpinner.setAdapter(unitSubsetAdapter);
+
+		inputSpinner.setOnItemSelectedListener(this);
 		outputSpinner.setOnItemSelectedListener(this);
 		
 		// Initialize callback for the numeric input field
@@ -102,8 +94,8 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		this.inputRate2 = this.units.get(this.unitInputIndex2).getNormalizedValue();
 		
 		//Setup checkbox listener
-		this.additionalUnitsSelected = false;
 		CheckBox addUnits = (CheckBox) findViewById(R.id.addUnitsCheckBox);
+		addUnits.setChecked(false);
 		addUnits.setOnClickListener(checkBoxListener);
 	}
 	
@@ -111,14 +103,12 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		public void onClick(View v) {
 			switch(v.getId()) {
 			case R.id.addUnitsCheckBox:
-				if (additionalUnitsSelected) {
-					inputSpinner.setAdapter(unitSubsetAdapter);
-					outputSpinner.setAdapter(unitSubsetAdapter);
-					additionalUnitsSelected = false;
-				} else {
+				if (((CheckBox)v).isChecked()) {
 					inputSpinner.setAdapter(unitAdapter);
 					outputSpinner.setAdapter(unitAdapter);
-					additionalUnitsSelected = true;
+				} else {
+					inputSpinner.setAdapter(unitSubsetAdapter);
+					outputSpinner.setAdapter(unitSubsetAdapter);
 				}
 			}		
 		}
@@ -170,7 +160,7 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 				return;
 			}
 		} else {
-			Log.d(TAG, "Selected \"to\" currency idx " + position + " (" +
+			Log.d(TAG, "Selected \"to\" unit idx " + position + " (" +
 						unitAbbrevs[position] + ")");
 			if (unitInputIndex2 != position) {
 				unitInputIndex2 = position;

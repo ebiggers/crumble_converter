@@ -104,11 +104,15 @@ public class UnitManager {
 					String str_normalized_value = m.group(2);
 					String str_visibility_level = m.group(3);
 
-					// Create a new Unit and add it to the units list.
-					Unit unit = new Unit(context, str_identifier_name,
-										 Double.parseDouble(str_normalized_value),
-										 Integer.parseInt(str_visibility_level));
-					units.add(unit);
+					int visibility_level = Integer.parseInt(str_visibility_level);
+
+					if (visibility_level <= maxVisibilityLevel) {
+						// Create a new Unit and add it to the units list.
+						Unit unit = new Unit(context, str_identifier_name,
+											 Double.parseDouble(str_normalized_value),
+											 visibility_level);
+						units.add(unit);
+					}
 				} else {
 					Log.e(TAG, "Invalid line in resource file " + filename +
 							   ": \"" + line + "\"");
