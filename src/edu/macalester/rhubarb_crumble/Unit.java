@@ -48,6 +48,15 @@ public class Unit {
 		this.visibilityLevel = visibilityLevel;
 	}
 
+	@Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (!(other instanceof Unit))
+			return false;
+		return getLocalizedName().equals(((Unit)other).getLocalizedName());
+	}
+
 	public String getLocalizedName() {
 		return localizedName;
 	}
