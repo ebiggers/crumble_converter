@@ -8,9 +8,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -20,7 +22,15 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 	private static final String TAG = "UnitConverterActivity";
 	
 	private ArrayList<Unit> units;
+	private ArrayList<Unit> unitSubset;
 	private String[] unitAbbrevs;
+	
+	private ArrayAdapter unitAdapter;
+	private ArrayAdapter unitSubsetAdapter;
+	private Spinner inputSpinner;
+	private Spinner outputSpinner;
+	
+	private boolean additionalUnitsSelected;
 	
 	private double inputAmount;
 	private boolean inputValid;
@@ -44,26 +54,37 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		this.category = getIntent().getStringExtra("category");
 		
 		this.units = UnitManager.getUnits(this.category, this, 1);
+		this.unitSubset = UnitManager.getUnits(this.category, this, 0);
+		
 		String[] unitNames = new String[this.units.size()];
+		String[] unitSubsetNames = new String[this.unitSubset.size()];
+		
 		this.unitAbbrevs = new String[this.units.size()];
 		
 		int i = 0;
 		for(Unit unit : this.units) {
+			int visibility = unit.getVisibilityLevel();
 			unitNames[i] = unit.getLocalizedName();
 			this.unitAbbrevs[i] = unit.getLocalizedAbbreviation();
+			if (visibility == 0)
+				unitSubsetNames[i] = unit.getLocalizedName();
 			i++;
 		}
 		
 		//Initialize the unit selector spinners
-		ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, unitNames);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		unitAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, unitNames);
+		unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		
-		Spinner inputSpinner = (Spinner) findViewById(R.id.unitInput1);
-		Spinner outputSpinner = (Spinner) findViewById(R.id.unitInput2);
+		unitSubsetAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, unitSubsetNames);
+		unitSubsetAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		
-		inputSpinner.setAdapter(adapter);
+		inputSpinner = (Spinner) findViewById(R.id.unitInput1);
+		outputSpinner = (Spinner) findViewById(R.id.unitInput2);
+		
+		inputSpinner.setAdapter(unitSubsetAdapter);
 		inputSpinner.setOnItemSelectedListener(this);
-		outputSpinner.setAdapter(adapter);
+		
+		outputSpinner.setAdapter(unitSubsetAdapter);
 		outputSpinner.setOnItemSelectedListener(this);
 		
 		// Initialize callback for the numeric input field
@@ -79,7 +100,29 @@ public class UnitConverterActivity extends Activity implements OnItemSelectedLis
 		this.unitInputIndex2 = outputSpinner.getSelectedItemPosition();
 		this.inputRate1 = this.units.get(this.unitInputIndex1).getNormalizedValue();
 		this.inputRate2 = this.units.get(this.unitInputIndex2).getNormalizedValue();
+		
+		//Setup checkbox listener
+		this.additionalUnitsSelected = false;
+		CheckBox addUnits = (CheckBox) findViewById(R.id.addUnitsCheckBox);
+		addUnits.setOnClickListener(checkBoxListener);
 	}
+	
+	View.OnClickListener checkBoxListener = new View.OnClickListener() {
+		public void onClick(View v) {
+			switch(v.getId()) {
+			case R.id.addUnitsCheckBox:
+				if (additionalUnitsSelected) {
+					inputSpinner.setAdapter(unitSubsetAdapter);
+					outputSpinner.setAdapter(unitSubsetAdapter);
+					additionalUnitsSelected = false;
+				} else {
+					inputSpinner.setAdapter(unitAdapter);
+					outputSpinner.setAdapter(unitAdapter);
+					additionalUnitsSelected = true;
+				}
+			}		
+		}
+	};
 	
 	// Set the text in the converter output field.
 	private void setConversionOutput(String s) {
