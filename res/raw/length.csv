@@ -33,3 +33,4 @@ astronomical_units , 149597870700     , 1
 light_years        , 9460730472580800 , 1
 light_seconds      , 299792458        , 1
 planck_lengths     , 1.61619997e-35   , 1
+smoots             , 1.70180          , 1

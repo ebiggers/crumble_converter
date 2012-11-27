@@ -331,6 +331,7 @@
 	<string name="light_years">Light years</string>
 	<string name="light_seconds">Light seconds</string>
 	<string name="planck_lengths">Planck lengths</string>
+	<string name="smoots">Smoots</string>
 	<string name="ounces">Ounces</string>
 	<string name="pounds">Pounds</string>
 	<string name="tons">Tons</string>
@@ -445,6 +446,7 @@
 	<string name="light_years.abbrev">ly</string>
 	<string name="light_seconds.abbrev"></string>
 	<string name="planck_lengths.abbrev">ℓ<sub>P</sub></string>
+	<string name="smoots.abbrev">smoots</string>
 	<string name="ounces.abbrev">oz</string>
 	<string name="pounds.abbrev">lb</string>
 	<string name="tons.abbrev">tn</string>
