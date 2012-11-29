@@ -20,6 +20,7 @@
     <string name="currency_button_name">Currency</string>
     <string name="units_button_name">Units</string>
     <string name="calculator_button">Calculator</string>
+    <string name="additional_unit_categories_checkbox_name">Show additional unit categories</string>
     <string name="additional_units_checkbox_name">Show additional units</string>
     <string name="prefixes_button_name">Metric Prefixes</string>
     <string name="unit_input_label">Input Unit</string>

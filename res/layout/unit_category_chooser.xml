@@ -25,7 +25,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="12dp"
-        android:text="@string/additional_units_checkbox_name" />
+        android:text="@string/additional_unit_categories_checkbox_name" />
 
     <ScrollView
         android:layout_width="fill_parent"
