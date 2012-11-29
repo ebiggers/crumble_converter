@@ -78,12 +78,13 @@ public class CalculatorActivity extends Activity
 			case R.id.btnNum7Id:
 			case R.id.btnNum8Id:
 			case R.id.btnNum9Id:
-				if (!num1.equals("0")) {
-					String digit = ((Button) view).getText().toString();
+				String digit = ((Button) view).getText().toString();
+				if (num1.equals("0"))
+					num1 = digit;
+				else
 					num1 += digit;
-					num1_valid = true;
-					display = num1;
-				}
+				num1_valid = true;
+				display = num1;
 				break;
 
 
