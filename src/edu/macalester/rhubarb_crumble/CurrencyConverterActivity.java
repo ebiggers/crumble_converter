@@ -267,7 +267,9 @@ public class CurrencyConverterActivity extends Activity
 					long now = new Date().getTime();
 					long seconds_outdated = (now - cur.rate.last_updated) / 1000;
 					txt = String.format("1 %s = %.3f USD", cur.abbrev, cur.rate.usd_equivalent);
-					txt2 = "updated " + prettyTimeString(seconds_outdated) + " ago";
+					if (!cur.abbrev.equals("USD")) {
+						txt2 = "updated " + prettyTimeString(seconds_outdated) + " ago";
+					}
 					if (seconds_outdated >= 3600) {
 						last_updated_textviews[i].setTextColor(
 									getResources().getColor(R.color.red));
@@ -285,6 +287,8 @@ public class CurrencyConverterActivity extends Activity
 
 	private void push_recent_rate(String abbrev, int abbrev_idx) {
 
+		if (abbrev.equals("USD"))
+			return;
 		// If the currency is already in the recent currencies list, move it to
 		// the front of the list.
 		for (int i = 0; i < recent_currencies.size(); i++) {
