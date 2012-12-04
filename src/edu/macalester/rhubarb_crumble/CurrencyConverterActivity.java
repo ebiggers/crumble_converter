@@ -229,13 +229,16 @@ public class CurrencyConverterActivity extends Activity
 
 		long amount;
 		String unit;
+        String abbrev = null;
 
 		if (seconds < SECONDS_PER_MINUTE) {
 			amount = seconds;
 			unit = "second";
+            abbrev = "sec.";
 		} else if (seconds < SECONDS_PER_HOUR) {
 			amount = seconds / SECONDS_PER_MINUTE;
 			unit = "minute";
+            abbrev = "sec.";
 		} else if (seconds < SECONDS_PER_DAY) {
 			amount = seconds / SECONDS_PER_HOUR;
 			unit = "hour";
@@ -248,8 +251,11 @@ public class CurrencyConverterActivity extends Activity
 		}
 		if (amount == 1)
 			return "1 " + unit;
-		else
+		else if (amount >= 10 && abbrev != null) {
+			return amount + " " + abbrev;
+        } else {
 			return amount + " " + unit + "s";
+        }
 	}
 
 	// Update the TextViews that show the rates of the recently converted
