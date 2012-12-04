@@ -11,9 +11,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import android.view.View;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -71,6 +72,7 @@ public class CurrencyConverterActivity extends Activity
 
 	// TextViews that show exchange rates for the recently converted currencies
 	private TextView[] recent_currency_textviews;
+	private TextView[] last_updated_textviews;
 
 	// List of recently converted currencies
 	private ArrayList<RecentCurrency> recent_currencies;
@@ -188,10 +190,15 @@ public class CurrencyConverterActivity extends Activity
 	// Load the recently converted currencies from the preferences.
 	private void load_recent_currencies() {
 		this.recent_currency_textviews = new TextView[NUM_RECENT_CURRENCIES];
+		this.last_updated_textviews = new TextView[NUM_RECENT_CURRENCIES];
 		
 		this.recent_currency_textviews[0] = (TextView)findViewById(R.id.recent_currency_1);
 		this.recent_currency_textviews[1] = (TextView)findViewById(R.id.recent_currency_2);
 		this.recent_currency_textviews[2] = (TextView)findViewById(R.id.recent_currency_3);
+
+		this.last_updated_textviews[0] = (TextView)findViewById(R.id.last_updated_1);
+		this.last_updated_textviews[1] = (TextView)findViewById(R.id.last_updated_2);
+		this.last_updated_textviews[2] = (TextView)findViewById(R.id.last_updated_3);
 
 		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
 		this.recent_currencies = new ArrayList<RecentCurrency>();
@@ -214,22 +221,64 @@ public class CurrencyConverterActivity extends Activity
 		update_recent_rates();
 	}
 
+	private String prettyTimeString(long seconds) {
+		final long SECONDS_PER_MINUTE = 60;
+		final long SECONDS_PER_HOUR = SECONDS_PER_MINUTE * 60;
+		final long SECONDS_PER_DAY = SECONDS_PER_HOUR * 24;
+		final long SECONDS_PER_YEAR = SECONDS_PER_DAY * 365;
+
+		long amount;
+		String unit;
+
+		if (seconds < SECONDS_PER_MINUTE) {
+			amount = seconds;
+			unit = "second";
+		} else if (seconds < SECONDS_PER_HOUR) {
+			amount = seconds / SECONDS_PER_MINUTE;
+			unit = "minute";
+		} else if (seconds < SECONDS_PER_DAY) {
+			amount = seconds / SECONDS_PER_HOUR;
+			unit = "hour";
+		} else if (seconds < SECONDS_PER_YEAR) {
+			amount = seconds / SECONDS_PER_DAY;
+			unit = "day";
+		} else {
+			amount = seconds / SECONDS_PER_YEAR;
+			unit = "year";
+		}
+		if (amount == 1)
+			return "1 " + unit;
+		else
+			return amount + " " + unit + "s";
+	}
+
 	// Update the TextViews that show the rates of the recently converted
 	// currencies.
 	private void update_recent_rates() {
 		for (int i = 0; i < NUM_RECENT_CURRENCIES; i++) {
-			String txt;
+			String txt = "";
+			String txt2 = "";
 			if (i < recent_currencies.size()) {
 				RecentCurrency cur = recent_currencies.get(i);
 
-				if (cur.rate == null)
+				if (cur.rate == null) {
 					txt = String.format("waiting for %s to USD rate...", cur.abbrev);
-				else
+				} else {
+					long now = new Date().getTime();
+					long seconds_outdated = (now - cur.rate.last_updated) / 1000;
 					txt = String.format("1 %s = %.3f USD", cur.abbrev, cur.rate.usd_equivalent);
-			} else {
-				txt = "";
+					txt2 = "updated " + prettyTimeString(seconds_outdated) + " ago";
+					if (seconds_outdated >= 3600) {
+						last_updated_textviews[i].setTextColor(
+									getResources().getColor(R.color.red));
+					} else {
+						last_updated_textviews[i].setTextColor(
+									getResources().getColor(R.color.white));
+					}
+				}
 			}
 			recent_currency_textviews[i].setText(txt);
+			last_updated_textviews[i].setText(txt2);
 		}
 	}
 
