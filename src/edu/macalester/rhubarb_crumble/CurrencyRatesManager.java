@@ -69,7 +69,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 
 	// Helper class to create the database if it doesn't already exist.
 	private static class CurrencyDBOpenHelper extends SQLiteOpenHelper {
-		private static final int DATABASE_VERSION = 6;
+		private static final int DATABASE_VERSION = 7;
 		private static final String DATABASE_NAME = "currencies.db";
 		private static final String CURRENCY_TABLE = "currency";
 		CurrencyDBOpenHelper(Context context) {
@@ -250,7 +250,7 @@ public class CurrencyRatesManager implements java.lang.Runnable, Handler.Callbac
 				String abbrev = entry.getKey();
 				ExchangeRate r = entry.getValue();
                 if (!abbrev.equals("USD")) {
-                    ih.prepareForInsert();
+                    ih.prepareForReplace();
                     ih.bind(abbreviation_col, abbrev);
                     ih.bind(usd_equivalent_col, r.usd_equivalent);
                     ih.bind(last_updated_col, r.last_updated);
