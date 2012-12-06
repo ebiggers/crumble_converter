@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="MetricPrefix">
+		<item name="android:layout_weight">1</item>
+		<item name="android:gravity">center</item>
+	</style>
+	<style name="MetricExponent">
+		<item name="android:layout_weight">1</item>
+		<item name="android:gravity">center</item>
+	</style>
+</resources>
