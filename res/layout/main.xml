@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:text="@string/main_activity_title"
         android:gravity="center"
+        android:textColor="@color/international_orange"
         android:textSize="24dp" />
     
     <TextView

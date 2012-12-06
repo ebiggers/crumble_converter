@@ -2,6 +2,8 @@
 <resources>
 
     <color name="red">#FF0000</color>
+    <color name="blue">#0000FF</color>
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
+    <color name="international_orange">#FF4F00</color>
 </resources>

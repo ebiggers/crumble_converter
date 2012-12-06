@@ -60,6 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="25sp"
+                android:textColor="@color/red"
                 android:text="@string/btnDel" />
 
             <Button
@@ -69,6 +70,7 @@
                 android:layout_weight="1"
                 android:onClick="onClick"
                 android:text="@string/btnDiv"
+                android:textColor="@color/blue"
                 android:textSize="25sp" />
 
             <Button
@@ -78,6 +80,7 @@
                 android:layout_weight="1"
                 android:onClick="onClick"
                 android:text="@string/btnSub"
+                android:textColor="@color/blue"
                 android:textSize="25sp" />
 
         </TableRow>
@@ -118,6 +121,7 @@
                 android:layout_weight="1"
                 android:onClick="onClick"
                 android:text="@string/btnClear"
+                android:textColor="@color/red"
                 android:textSize="25sp" />
 
             <Button
@@ -127,6 +131,7 @@
                 android:layout_weight="1"
                 android:onClick="onClick"
                 android:text="@string/btnMul"
+                android:textColor="@color/blue"
                 android:textSize="25sp" />
 
             <Button
@@ -136,6 +141,7 @@
                 android:layout_weight="1"
                 android:onClick="onClick"
                 android:text="@string/btnAdd"
+                android:textColor="@color/blue"
                 android:textSize="25sp" />
 
         </TableRow>
@@ -194,6 +200,7 @@
                 android:layout_weight="1"
                 android:onClick="onClick"
                 android:text="@string/btnEqual"
+                android:textColor="@color/blue"
                 android:textSize="25sp" />
 
         </TableRow>
