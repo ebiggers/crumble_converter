@@ -1,211 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <TextView
-        android:id="@+id/txtResultId"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:background="#cccccc"
-        android:textColor="#000000"
-        android:textSize="25sp"
-        android:gravity="right"
-        android:padding="12dp" />
-
-    <TableLayout
-        android:id="@+id/tableId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtResultId"
-        android:layout_below="@id/txtResultId"
-        android:layout_margin="12dp" >
-
-        <TableRow>
-            <Button
-                android:layout_column="2"
-                android:id="@+id/btnDelId"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:textColor="@color/red"
-                android:text="@string/btnDel" />
-            <Button
-                android:layout_column="3"
-                android:id="@+id/btnClearId"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:textColor="@color/red"
-                android:text="@string/btnClear" />
-        </TableRow>
-
-        <TableRow>
-
-            <Button
-                android:id="@+id/btnNum7Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum7" />
-
-            <Button
-                android:id="@+id/btnNum8Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum8" />
-
-            <Button
-                android:id="@+id/btnNum9Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum9" />
-
-            <Button
-                android:id="@+id/btnDivId"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:textColor="@color/blue"
-                android:text="@string/btnDiv" />
-        </TableRow>
-
-        <TableRow>
-
-            <Button
-                android:id="@+id/btnNum4Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum4" />
-
-            <Button
-                android:id="@+id/btnNum5Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum5" />
-
-            <Button
-                android:id="@+id/btnNum6Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum6" />
-
-            <Button
-                android:id="@+id/btnMulId"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:textColor="@color/blue"
-                android:text="@string/btnMul" />
-        </TableRow>
-
-        <TableRow>
-
-            <Button
-                android:id="@+id/btnNum1Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum1" />
-
-            <Button
-                android:id="@+id/btnNum2Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum2" />
-
-            <Button
-                android:id="@+id/btnNum3Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum3" />
-
-            <Button
-                android:id="@+id/btnSubId"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:textColor="@color/blue"
-                android:text="@string/btnSub" />
-        </TableRow>
-
-        <TableRow>
-
-            <Button
-                android:id="@+id/btnNum0Id"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnNum0" />
-
-            <Button
-                android:id="@+id/btnDecimalPointId"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:text="@string/btnDecimalPoint" />
-
-            <Button
-                android:id="@+id/btnEqualId"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:textColor="@color/blue"
-                android:text="@string/btnEqual" />
-
-            <Button
-                android:id="@+id/btnAddId"
-                android:onClick="onClick"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="25sp"
-                android:textColor="@color/blue"
-                android:text="@string/btnAdd" />
-        </TableRow>
-    </TableLayout>
-
-</RelativeLayout>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/tableId"
+	style="@style/CalculatorTable"
+	>
+	<TableRow>
+		<TextView
+			android:id="@+id/txtResultId"
+			style="@style/CalculatorResult" />
+	</TableRow>
+	<TableRow>
+		<Button
+			style="@style/CalculatorButton.Clear"
+			android:id="@+id/btnDelId"
+			android:text="@string/btnDel" />
+		<Button
+			style="@style/CalculatorButton.Clear"
+			android:id="@+id/btnClearId"
+			android:text="@string/btnClear"/>
+	</TableRow>
+	<TableRow>
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum7Id"
+			android:text="@string/btnNum7" />
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum8Id"
+			android:text="@string/btnNum8" />
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum9Id"
+			android:text="@string/btnNum9" />
+		<Button
+			style="@style/CalculatorButton.Operator"
+			android:id="@+id/btnDivId"
+			android:text="@string/btnDiv" />
+	</TableRow>
+	<TableRow>
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum4Id"
+			android:text="@string/btnNum4" />
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum5Id"
+			android:text="@string/btnNum5" />
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum6Id"
+			android:text="@string/btnNum6" />
+		<Button
+			style="@style/CalculatorButton.Operator"
+			android:id="@+id/btnMulId"
+			android:text="@string/btnMul" />
+	</TableRow>
+	<TableRow>
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum1Id"
+			android:text="@string/btnNum1" />
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum2Id"
+			android:text="@string/btnNum2" />
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum3Id"
+			android:text="@string/btnNum3" />
+		<Button
+			style="@style/CalculatorButton.Operator"
+			android:id="@+id/btnSubId"
+			android:text="@string/btnSub" />
+	</TableRow>
+	<TableRow>
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnNum0Id"
+			android:text="@string/btnNum0" />
+		<Button
+			style="@style/CalculatorButton"
+			android:id="@+id/btnDecimalPointId"
+			android:text="@string/btnDecimalPoint" />
+		<Button
+			style="@style/CalculatorButton.Operator"
+			android:id="@+id/btnEqualId"
+			android:text="@string/btnEqual" />
+		<Button
+			style="@style/CalculatorButton.Operator"
+			android:id="@+id/btnAddId"
+			android:text="@string/btnAdd" />
+	</TableRow>
+</TableLayout>

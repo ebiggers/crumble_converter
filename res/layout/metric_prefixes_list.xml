@@ -8,15 +8,15 @@
 	<TableLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-        android:stretchColumns="*" >
+		android:stretchColumns="*" >
 		<TableRow>
 			<TextView
-			  android:gravity="center"
-			  android:text="@string/metric_prefix_page_title"
-			  android:textSize="24dp"
-			  android:textStyle="bold"
-			  android:layout_span="2"
-              android:paddingBottom="10dp" />
+				android:gravity="center"
+				android:text="@string/metric_prefix_page_title"
+				android:textSize="24dp"
+				android:textStyle="bold"
+				android:layout_span="2"
+				android:paddingBottom="10dp" />
 		</TableRow>
 		<TableRow android:paddingBottom="10dp" >
 			<TextView
@@ -33,86 +33,86 @@
 				android:gravity="center"
 				android:text="@string/exp_title"
 				android:textStyle="bold" />
-        </TableRow>
+			</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/yotta" />
-			  <TextView style="@style/MetricExponent" android:text="@string/yottaExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/yotta" />
+			<TextView style="@style/MetricExponent" android:text="@string/yottaExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/zetta" />
-			  <TextView style="@style/MetricExponent" android:text="@string/zettaExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/zetta" />
+			<TextView style="@style/MetricExponent" android:text="@string/zettaExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/exa" />
-			  <TextView style="@style/MetricExponent" android:text="@string/exaExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/exa" />
+			<TextView style="@style/MetricExponent" android:text="@string/exaExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/peta" />
-			  <TextView style="@style/MetricExponent" android:text="@string/petaExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/peta" />
+			<TextView style="@style/MetricExponent" android:text="@string/petaExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/tera" />
-			  <TextView style="@style/MetricExponent" android:text="@string/teraExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/tera" />
+			<TextView style="@style/MetricExponent" android:text="@string/teraExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/giga" />
-			  <TextView style="@style/MetricExponent" android:text="@string/gigaExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/giga" />
+			<TextView style="@style/MetricExponent" android:text="@string/gigaExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/mega" />
-			  <TextView style="@style/MetricExponent" android:text="@string/megaExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/mega" />
+			<TextView style="@style/MetricExponent" android:text="@string/megaExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/kilo" />
-			  <TextView style="@style/MetricExponent" android:text="@string/kiloExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/kilo" />
+			<TextView style="@style/MetricExponent" android:text="@string/kiloExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/hecto" />
-			  <TextView style="@style/MetricExponent" android:text="@string/hectoExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/hecto" />
+			<TextView style="@style/MetricExponent" android:text="@string/hectoExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/deca" />
-			  <TextView style="@style/MetricExponent" android:text="@string/decaExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/deca" />
+			<TextView style="@style/MetricExponent" android:text="@string/decaExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/deci" />
-			  <TextView style="@style/MetricExponent" android:text="@string/deciExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/deci" />
+			<TextView style="@style/MetricExponent" android:text="@string/deciExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/centi" />
-			  <TextView style="@style/MetricExponent" android:text="@string/centiExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/centi" />
+			<TextView style="@style/MetricExponent" android:text="@string/centiExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/milli" />
-			  <TextView style="@style/MetricExponent" android:text="@string/milliExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/milli" />
+			<TextView style="@style/MetricExponent" android:text="@string/milliExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/micro" />
-			  <TextView style="@style/MetricExponent" android:text="@string/microExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/micro" />
+			<TextView style="@style/MetricExponent" android:text="@string/microExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/nano" />
-			  <TextView style="@style/MetricExponent" android:text="@string/nanoExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/nano" />
+			<TextView style="@style/MetricExponent" android:text="@string/nanoExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/pico" />
-			  <TextView style="@style/MetricExponent" android:text="@string/picoExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/pico" />
+			<TextView style="@style/MetricExponent" android:text="@string/picoExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/femto" />
-			  <TextView style="@style/MetricExponent" android:text="@string/femtoExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/femto" />
+			<TextView style="@style/MetricExponent" android:text="@string/femtoExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/atto" />
-			  <TextView style="@style/MetricExponent" android:text="@string/attoExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/atto" />
+			<TextView style="@style/MetricExponent" android:text="@string/attoExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/zepto" />
-			  <TextView style="@style/MetricExponent" android:text="@string/zeptoExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/zepto" />
+			<TextView style="@style/MetricExponent" android:text="@string/zeptoExp" />
 		</TableRow>
 		<TableRow>
-			  <TextView style="@style/MetricPrefix" android:text="@string/yocto" />
-			  <TextView style="@style/MetricExponent" android:text="@string/yoctoExp" />
+			<TextView style="@style/MetricPrefix" android:text="@string/yocto" />
+			<TextView style="@style/MetricExponent" android:text="@string/yoctoExp" />
 		</TableRow>
-    </TableLayout>
+	</TableLayout>
 </ScrollView>
