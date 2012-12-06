@@ -14,8 +14,9 @@
 		<item name="android:textStyle">bold</item>
 	</style>
 
-	<style name="MetricPrefixTitle" parent="@style/TextCellCenteredBold">
+	<style name="MetricPrefixTitle">
 		<item name="android:textSize">24sp</item>
+		<item name="android:textStyle">bold</item>
 	</style>
 
 	<style name="MetricPrefixHeader" parent="@style/TextCellCenteredBold">
