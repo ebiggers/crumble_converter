@@ -272,8 +272,11 @@ public class CurrencyConverterActivity extends Activity
 				} else {
 					long now = new Date().getTime();
 					long seconds_outdated = (now - cur.rate.last_updated) / 1000;
-					txt = String.format("1 %s = %.3f USD", cur.abbrev, cur.rate.usd_equivalent);
-					if (!cur.abbrev.equals("USD")) {
+					if (cur.rate.last_updated == 0) {
+						txt = String.format("%s to USD", cur.abbrev);
+						txt2 = "not available";
+					} else {
+						txt = String.format("1 %s = %.3f USD", cur.abbrev, cur.rate.usd_equivalent);
 						txt2 = "updated " + prettyTimeString(seconds_outdated) + " ago";
 					}
 					if (seconds_outdated >= 3600) {
