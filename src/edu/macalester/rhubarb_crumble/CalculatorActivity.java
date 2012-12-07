@@ -98,12 +98,11 @@ public class CalculatorActivity extends Activity
 			if (op != OP_NONE) {
 				builder.append(' ');
 				builder.append(opToString(op));
-				if (num1_valid)
+				if (num1.length() != 0)
 					builder.append(' ');
 			}
 		}
-		if (num1_valid)
-			builder.append(num1);
+		builder.append(num1);
 		setDisplay(builder.toString());
 	}
 
