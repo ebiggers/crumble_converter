@@ -8,8 +8,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 
+// The Activity that runs when the user is choosing a category of units to
+// convert.
 public class UnitCategoryChooserActivity extends Activity
-                                         implements OnClickListener
+										 implements OnClickListener
 {
 
 	private static final String TAG = "UnitCategoryChooserActivity";
@@ -19,6 +21,8 @@ public class UnitCategoryChooserActivity extends Activity
 		view.setOnClickListener(this);
 	}
 
+	// Called when the activity is created.  Sets the appropriate view and sets
+	// up onClick handlers for the buttons and the checkbox.
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,6 +46,7 @@ public class UnitCategoryChooserActivity extends Activity
 		listenForClickOn(R.id.prefixes_button);
 	}
 
+	// Called when a button has been pressed or the checkbox has been checked.
 	public void onClick(View v)
 	{
 		String category;

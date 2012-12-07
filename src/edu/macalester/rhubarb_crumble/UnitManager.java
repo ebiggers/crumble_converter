@@ -12,13 +12,23 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+// The UnitManager class is responsible for parsing one of the unit
+// configuration files (in the res/raw directory) that specifies the list of
+// units (such as "meters", "centimeters", etc.) in a unit category (such as
+// "length").
 public class UnitManager {
 
 	private static String TAG = "UnitManager";
 
+	// A regular expression to match the identifier name for a unit.  This is
+	// separate from the localized name that's actually displayed to the user.
 	private static String IDENTIFIER_NAME_REGEX = "[a-z0-9_]+";
+
+	// A regular expression to match a floating point number.
 	private static String FLOATING_POINT_REGEX =
 				"[-+]?(?:(?:[0-9]+(?:\\.[0-9]*)?)|(?:\\.[0-9]+))(?:[eE][-+]?[0-9]+)?";
+
+	// A regular expression to match an integer.
 	private static String INTEGER_REGEX = "[0-9]+";
 
 	// Load a category of units from the corresponding configuration file in the
@@ -70,9 +80,9 @@ public class UnitManager {
 		}
 
 		// Regular expression to match:
-		//    <alphanumeric unit identifier name> , <floating point number> , <integer>
+		//	  <alphanumeric unit identifier name> , <floating point number> , <integer>
 		Pattern pat = Pattern.compile("^\\s*(" + IDENTIFIER_NAME_REGEX + ")\\s*," +
-									   "\\s*(" + FLOATING_POINT_REGEX  + ")\\s*," + 
+									   "\\s*(" + FLOATING_POINT_REGEX  + ")\\s*," +
 									   "\\s*(" + INTEGER_REGEX		   + ")\\s*$");
 		try {
 			String line;

@@ -29,7 +29,7 @@ public class CurrencyConverterActivity extends Activity
 			 implements OnItemSelectedListener, TextWatcher, Handler.Callback {
 
 	// The instance of CurrencyRatesManager that is in charge of managing the
-	// currency exchange rate.se
+	// currency exchange rates.
 	private CurrencyRatesManager rates_manager;
 
 	// 0-based indices (in the currency abbreviations array) of the currently
@@ -64,9 +64,9 @@ public class CurrencyConverterActivity extends Activity
 		}
 
 		public RecentCurrency(String abbrev, int abbrev_idx) {
-			this.abbrev       = abbrev;
-			this.abbrev_idx   = abbrev_idx;
-			this.rate         = null;
+			this.abbrev = abbrev;
+			this.abbrev_idx = abbrev_idx;
+			this.rate = null;
 		}
 	};
 
@@ -115,7 +115,7 @@ public class CurrencyConverterActivity extends Activity
 		// Initialize an ArrayAdapter from the currency long names, and set both
 		// spinners to be backed by the ArrayAdapter.
 		this.adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item,
-									    currency_choices);
+										currency_choices);
 
 		this.adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -191,7 +191,7 @@ public class CurrencyConverterActivity extends Activity
 	private void load_recent_currencies() {
 		this.recent_currency_textviews = new TextView[NUM_RECENT_CURRENCIES];
 		this.last_updated_textviews = new TextView[NUM_RECENT_CURRENCIES];
-		
+
 		this.recent_currency_textviews[0] = (TextView)findViewById(R.id.recent_currency_1);
 		this.recent_currency_textviews[1] = (TextView)findViewById(R.id.recent_currency_2);
 		this.recent_currency_textviews[2] = (TextView)findViewById(R.id.recent_currency_3);
@@ -202,7 +202,7 @@ public class CurrencyConverterActivity extends Activity
 
 		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
 		this.recent_currencies = new ArrayList<RecentCurrency>();
-		
+
 		for (int i = 0; i < NUM_RECENT_CURRENCIES; i++) {
 			String abbrev = prefs.getString("recent_currency_" + i, null);
 			if (abbrev != null) {
@@ -229,16 +229,16 @@ public class CurrencyConverterActivity extends Activity
 
 		long amount;
 		String unit;
-        String abbrev = null;
+		String abbrev = null;
 
 		if (seconds < SECONDS_PER_MINUTE) {
 			amount = seconds;
 			unit = "second";
-            abbrev = "sec.";
+			abbrev = "sec.";
 		} else if (seconds < SECONDS_PER_HOUR) {
 			amount = seconds / SECONDS_PER_MINUTE;
 			unit = "minute";
-            abbrev = "sec.";
+			abbrev = "sec.";
 		} else if (seconds < SECONDS_PER_DAY) {
 			amount = seconds / SECONDS_PER_HOUR;
 			unit = "hour";
@@ -253,9 +253,9 @@ public class CurrencyConverterActivity extends Activity
 			return "1 " + unit;
 		else if (amount >= 10 && abbrev != null) {
 			return amount + " " + abbrev;
-        } else {
+		} else {
 			return amount + " " + unit + "s";
-        }
+		}
 	}
 
 	// Update the TextViews that show the rates of the recently converted
@@ -317,7 +317,7 @@ public class CurrencyConverterActivity extends Activity
 
 		// Currency is not in the recent currencies list.  Add it to the list,
 		// possibly after deleting the last currency in the list.
-		
+
 		RecentCurrency oldest;
 		if (NUM_RECENT_CURRENCIES == recent_currencies.size()) {
 			oldest = recent_currencies.get(NUM_RECENT_CURRENCIES - 1);

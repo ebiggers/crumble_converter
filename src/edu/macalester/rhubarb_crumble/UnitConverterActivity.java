@@ -133,7 +133,7 @@ public class UnitConverterActivity extends Activity implements
 		this.unitInputIndex2 = -1;
 		this.inputRate1 = -1.0;
 		this.inputRate2 = -1.0;
-		
+
 		// Hide the additional units checkbox if no additional units are available
 		if (this.units.size() == this.unitSubset.size()) {
 			View additionalUnitsCheckbox = findViewById(R.id.addUnitsCheckBox);
