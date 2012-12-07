@@ -15,6 +15,7 @@ public class UnitCategoryChooserActivity extends Activity
 {
 
 	private static final String TAG = "UnitCategoryChooserActivity";
+	private boolean additional_categories_shown;
 
 	private void listenForClickOn(int resource_id) {
 		View view = findViewById(resource_id);
@@ -44,6 +45,21 @@ public class UnitCategoryChooserActivity extends Activity
 		listenForClickOn(R.id.pressure_button);
 		listenForClickOn(R.id.speed_button);
 		listenForClickOn(R.id.prefixes_button);
+		additional_categories_shown = false;
+	}
+
+	public void updateCategoriesShown() {
+		View additionalUnitsField = findViewById(R.id.additional_units_layout);
+		View additionalUnitsLabel = findViewById(R.id.additional_units_label);
+		if (additional_categories_shown) {
+			additionalUnitsField.setVisibility(View.VISIBLE);
+			additionalUnitsLabel.setVisibility(View.VISIBLE);
+		} else {
+			additionalUnitsField.setVisibility(View.GONE);
+			additionalUnitsLabel.setVisibility(View.GONE);
+		}
+		additionalUnitsField.invalidate();
+		additionalUnitsLabel.invalidate();
 	}
 
 	// Called when a button has been pressed or the checkbox has been checked.
@@ -52,19 +68,19 @@ public class UnitCategoryChooserActivity extends Activity
 		String category;
 		switch(v.getId()) {
 		case R.id.additional_units_chekbox:
-			View additionalUnitsField = findViewById(R.id.additional_units_layout);
-			View additionalUnitsLabel = findViewById(R.id.additional_units_label);
 			if(((CheckBox) v).isChecked()) {
-				additionalUnitsField.setVisibility(View.VISIBLE);
-				additionalUnitsLabel.setVisibility(View.VISIBLE);
 				Log.d("Category", "Checkbox Checked.");
+				if (!additional_categories_shown) {
+					additional_categories_shown = true;
+					updateCategoriesShown();
+				}
 			} else {
-				additionalUnitsField.setVisibility(View.GONE);
-				additionalUnitsLabel.setVisibility(View.GONE);
 				Log.d("Category", "Checkbox not Checked");
+				if (additional_categories_shown) {
+					additional_categories_shown = false;
+					updateCategoriesShown();
+				}
 			}
-			additionalUnitsField.invalidate();
-			additionalUnitsLabel.invalidate();
 			return;
 		case R.id.angle_button:
 			category = "angle";
@@ -113,5 +129,16 @@ public class UnitCategoryChooserActivity extends Activity
 		i.putExtra("category", category);
 		Log.d(TAG, "Starting UnitConverterActivity with category=\"" + category + "\"");
 		startActivity(i);
+	}
+
+	// Restore the activity state
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		View v = findViewById(R.id.additional_units_chekbox);
+		if (((CheckBox)v).isChecked()) {
+			additional_categories_shown = true;
+			updateCategoriesShown();
+		}
 	}
 }
