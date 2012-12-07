@@ -272,38 +272,71 @@ public class CalculatorActivity extends Activity
 	// is set to text of the result, @num1 is set to the empty string, and
 	// @num1_valid is set to false.
 	private void makeBinaryOperation() {
-		double n1, n2;
+		double n1 = 0.0, n2 = 0.0;
+		long l1 = 0, l2 = 0;
+		double result = 0.0;
+		long lresult = 0;
+		boolean floating_point_op;
 		try {
-			n1 = Double.parseDouble(num1);
-			n2 = Double.parseDouble(num2);
+			if (num1.indexOf('.') != -1 || num2.indexOf('.') != -1 ||
+				num1.length() > 8 || num2.length() > 8)
+			{
+				floating_point_op = true;
+				n1 = Double.parseDouble(num1);
+				n2 = Double.parseDouble(num2);
+			} else {
+				floating_point_op = false;
+				l1 = Long.parseLong(num1);
+				l2 = Long.parseLong(num2);
+			}
 		} catch (NumberFormatException e) {
 			displayView.setText("ERROR");
-			Log.e(TAG, "Error parsing double", e);
+			Log.e(TAG, "Error parsing number", e);
 			return;
 		}
-		double result;
 		switch (op) {
 		case OP_ADD:
-			result = n2 + n1;
+			if (floating_point_op)
+				result = n2 + n1;
+			else
+				lresult = l2 + l1;
 			break;
 		case OP_SUB:
-			result = n2 - n1;
+			if (floating_point_op)
+				result = n2 - n1;
+			else
+				lresult = l2 - l1;
 			break;
 		case OP_DIV:
-			result = n2 / n1;
+			if (!floating_point_op) {
+				if (l1 == 0 || l2 % l1 != 0) {
+					floating_point_op = true;
+					n1 = (double)l1;
+					n2 = (double)l2;
+				}
+			}
+			if (floating_point_op)
+				result = n2 / n1;
+			else
+				lresult = l2 / l1;
 			break;
 		case OP_MUL:
-			result = n2 * n1;
+			if (floating_point_op)
+				result = n2 * n1;
+			else
+				lresult = l2 * l1;
 			break;
 		default:
 			assert(false);
 			result = 0;
 			break;
 		}
-		num2 = Double.toString(result);
+		if (floating_point_op)
+			num2 = Double.toString(result);
+		else
+			num2 = Long.toString(lresult);
 		num1 = "";
 		op = OP_NONE;
 		num1_valid = false;
-		displayView.setText(num2);
 	}
 }
