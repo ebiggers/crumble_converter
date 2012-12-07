@@ -82,18 +82,38 @@ public class CalculatorActivity extends Activity
 		if (num2 == null)
 			num2 = "";
 		num1_valid = savedInstanceState.getBoolean("num1_valid", false);
-		String display = savedInstanceState.getString("display");
-		if (display != null)
-			displayView.setText(display);
+		setDisplay(savedInstanceState.getString("display"));
+	}
+
+	private void setDisplay(String display) {
+		if (display == null)
+			display = "";
+		displayView.setText(display);
+	}
+
+	private void updateDisplay() {
+		StringBuilder builder = new StringBuilder();
+		if (num2.length() != 0 && (op != OP_NONE || !num1_valid)) {
+			builder.append(num2);
+			if (op != OP_NONE) {
+				builder.append(' ');
+				builder.append(opToString(op));
+				if (num1_valid)
+					builder.append(' ');
+			}
+		}
+		if (num1_valid)
+			builder.append(num1);
+		setDisplay(builder.toString());
 	}
 
 	// Reset the calculator to its initial state.
 	private void clear_calculator() {
 		num1 = "";
 		num2 = "";
-		displayView.setText("");
 		op = OP_NONE;
 		num1_valid = false;
+		updateDisplay();
 	}
 
 	// Given the ID of a button that was pressed on the calculator, return the
@@ -114,10 +134,24 @@ public class CalculatorActivity extends Activity
 		}
 	}
 
+	private String opToString(int op_id) {
+		switch (op_id) {
+		case OP_ADD:
+			return "+";
+		case OP_SUB:
+			return "-";
+		case OP_MUL:
+			return "×";
+		case OP_DIV:
+			return "/";
+		default:
+			return "?";
+		}
+	}
+
 	// On-click event handler for all the calculator buttons
 	@Override
 	public void onClick(View view) {
-		String display = null;
 		int viewId = view.getId();
 
 		switch (viewId) {
@@ -144,17 +178,14 @@ public class CalculatorActivity extends Activity
 				}
 				// @num1 will always be valid after a digit has been entered.
 				num1_valid = true;
-				display = num1;
 				break;
 
 			// Decimal point button
 			case R.id.btnDecimalPointId:
 				// Only allow entering a decimal point if a decimal point has
 				// not already been entered.
-				if (num1.indexOf('.') == -1) {
+				if (num1.indexOf('.') == -1)
 					num1 += ".";
-					display = num1;
-				}
 				// @num1_valid is not set because a single decimal point without
 				// any trailing digits is not a valid number.
 				break;
@@ -174,9 +205,6 @@ public class CalculatorActivity extends Activity
 					} else {
 						// If @num1 is valid but there is no previous operation
 						// to make at this point, push @num1 back to @num2.
-						// Note that the calculator display is *not* modified,
-						// even though it will be showing the number that has
-						// been pushed back to @num2.
 						num2 = num1;
 						num1 = "";
 						num1_valid = false;
@@ -224,12 +252,10 @@ public class CalculatorActivity extends Activity
 							num1_valid = false;
 						}
 					}
-					display = num1;
 				}
 				break;
 		}
-		if (display != null)
-			displayView.setText(display);
+		updateDisplay();
 	}
 
 	//

@@ -219,7 +219,7 @@
     <string name="btnDiv">/</string>
     <string name="btnAdd">+</string>
     <string name="btnSub">-</string>
-    <string name="btnMul">x</string>
+    <string name="btnMul">×</string>
     <string name="btnClear">AC</string>
     <string name="btnDel">Del</string>
     <string name="btnDecimalPoint">.</string>
