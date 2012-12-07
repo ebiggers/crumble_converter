@@ -136,8 +136,7 @@ public class UnitConverterActivity extends Activity implements
 
 		// Hide the additional units checkbox if no additional units are available
 		if (this.units.size() == this.unitSubset.size()) {
-			View additionalUnitsCheckbox = findViewById(R.id.addUnitsCheckBox);
-			additionalUnitsCheckbox.setVisibility(View.GONE);
+			addUnits.setVisibility(View.GONE);
 		}
 	}
 
@@ -160,7 +159,7 @@ public class UnitConverterActivity extends Activity implements
 				this.inputAmount = Double.parseDouble(text);
 				this.inputValid = true;
 				Log.d(TAG, "Current amount updated to: " + this.inputAmount);
-				doConversion();
+				maybeDoConversion();
 			} catch (NumberFormatException e) {
 				this.inputValid = false;
 				Log.d(TAG, text + " could not be converted to a double");
@@ -272,16 +271,18 @@ public class UnitConverterActivity extends Activity implements
 		}
 
 		// If something is selected in both spinners, make a unit conversion.
-		if (this.unitInputIndex1 != -1 && this.unitInputIndex2 != -1)
-			doConversion();
+		maybeDoConversion();
 	}
 
-	// Make a conversion
-	public void doConversion() {
+	// Make a conversion if possible
+	public void maybeDoConversion() {
+
+		if (this.unitInputIndex1 == -1 || this.unitInputIndex2 == -1)
+			return;
 
 		// If the amount entered in the numeric input field is invalid, default
 		// to 1.
-		Double amount;
+		double amount;
 		if (this.inputValid)
 			amount = this.inputAmount;
 		else
@@ -292,7 +293,7 @@ public class UnitConverterActivity extends Activity implements
 
 		Log.d(TAG, "Converting " + amount + " " + unit1 + " to " + unit2);
 
-		Double resultAmount = 0.0;
+		double resultAmount = 0.0;
 
 		if (this.category.equalsIgnoreCase("temperature")) {
 			// Handle temperature as a special case, because the different
