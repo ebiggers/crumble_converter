@@ -48,7 +48,7 @@ public class UnitCategoryChooserActivity extends Activity
 		additional_categories_shown = false;
 	}
 
-	public void updateCategoriesShown() {
+	private void updateCategoriesShown() {
 		View additionalUnitsField = findViewById(R.id.additional_units_layout);
 		View additionalUnitsLabel = findViewById(R.id.additional_units_label);
 		if (additional_categories_shown) {

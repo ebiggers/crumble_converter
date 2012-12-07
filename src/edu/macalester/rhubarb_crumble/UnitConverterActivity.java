@@ -140,6 +140,36 @@ public class UnitConverterActivity extends Activity implements
 		}
 	}
 
+	// Save the activity state
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		savedInstanceState.putBoolean("additional_units_shown", additional_units_shown);
+		savedInstanceState.putInt("unitInputIndex1", unitInputIndex1);
+		savedInstanceState.putInt("unitInputIndex2", unitInputIndex2);
+		savedInstanceState.putDouble("inputAmount", inputAmount);
+		savedInstanceState.putBoolean("inputValid", inputValid);
+		savedInstanceState.putDouble("inputRate1", inputRate1);
+		savedInstanceState.putDouble("inputRate2", inputRate2);
+	}
+
+	// Restore the activity state
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		unitInputIndex1 = savedInstanceState.getInt("unitInputIndex1");
+		unitInputIndex2 = savedInstanceState.getInt("unitInputIndex2");
+		inputAmount = savedInstanceState.getDouble("inputAmount");
+		inputValid = savedInstanceState.getBoolean("inputValid");
+		inputRate1 = savedInstanceState.getDouble("inputRate1");
+		inputRate2 = savedInstanceState.getDouble("inputRate2");
+		if (savedInstanceState.getBoolean("additional_units_shown") &&
+			!additional_units_shown)
+		{
+			changeUnitsShown(false);
+		}
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+
 	// Set the text in the converter output field.
 	private void setConversionOutput(String s) {
 		TextView v = (TextView)findViewById(R.id.unit_conversion_output);
@@ -209,6 +239,42 @@ public class UnitConverterActivity extends Activity implements
 		return -1;
 	}
 
+	private void changeUnitsShown(boolean reindex) {
+		if (additional_units_shown) {
+			// Hide the additional units.  Keep each spinner on the same unit if
+			// the selected unit is still available in the unit subset;
+			// otherwise, set it to be on the first unit in the list.
+			if (reindex) {
+				this.unitInputIndex1 = additionalToSubsetIndex(this.unitInputIndex1);
+				this.unitInputIndex2 = additionalToSubsetIndex(this.unitInputIndex2);
+			}
+			inputSpinner.setAdapter(unitSubsetAdapter);
+			outputSpinner.setAdapter(unitSubsetAdapter);
+			if (this.unitInputIndex1 == -1)
+				inputSpinner.setSelection(0);
+			else
+				inputSpinner.setSelection(unitInputIndex1);
+
+			if (this.unitInputIndex2 == -1)
+				outputSpinner.setSelection(0);
+			else
+				outputSpinner.setSelection(unitInputIndex2);
+			additional_units_shown = false;
+		} else {
+			// Show the additional units.  Keep the spinners on the same units,
+			// even though their indices may have changed.
+			if (reindex) {
+				this.unitInputIndex1 = subsetToAdditionalIndex(this.unitInputIndex1);
+				this.unitInputIndex2 = subsetToAdditionalIndex(this.unitInputIndex2);
+			}
+			inputSpinner.setAdapter(unitAdapter);
+			outputSpinner.setAdapter(unitAdapter);
+			inputSpinner.setSelection(unitInputIndex1);
+			outputSpinner.setSelection(unitInputIndex2);
+			additional_units_shown = true;
+		}
+	}
+
 	// Called when the user checks or unchecks the "Show additional units"
 	// checkbox.
 	public void onClick(View v) {
@@ -216,36 +282,11 @@ public class UnitConverterActivity extends Activity implements
 		case R.id.addUnitsCheckBox:
 			if (((CheckBox)v).isChecked()) {
 				if (!additional_units_shown) {
-					// Show the additional units.  Keep the spinners on the same
-					// units, even though their indices may have changed.
-					additional_units_shown = true;
-					this.unitInputIndex1 = subsetToAdditionalIndex(this.unitInputIndex1);
-					this.unitInputIndex2 = subsetToAdditionalIndex(this.unitInputIndex2);
-					inputSpinner.setAdapter(unitAdapter);
-					outputSpinner.setAdapter(unitAdapter);
-					inputSpinner.setSelection(unitInputIndex1);
-					outputSpinner.setSelection(unitInputIndex2);
+					changeUnitsShown(true);
 				}
 			} else {
 				if (additional_units_shown) {
-					// Hide the additional units.  Keep each spinner on the same
-					// unit if the selected unit is still available in the unit
-					// subset; otherwise, set it to be on the first unit in the
-					// list.
-					additional_units_shown = false;
-					this.unitInputIndex1 = additionalToSubsetIndex(this.unitInputIndex1);
-					this.unitInputIndex2 = additionalToSubsetIndex(this.unitInputIndex2);
-					inputSpinner.setAdapter(unitSubsetAdapter);
-					outputSpinner.setAdapter(unitSubsetAdapter);
-					if (this.unitInputIndex1 == -1)
-						inputSpinner.setSelection(0);
-					else
-						inputSpinner.setSelection(unitInputIndex1);
-
-					if (this.unitInputIndex2 == -1)
-						outputSpinner.setSelection(0);
-					else
-						outputSpinner.setSelection(unitInputIndex2);
+					changeUnitsShown(true);
 				}
 			}
 		}
