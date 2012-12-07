@@ -132,7 +132,7 @@ public class CurrencyConverterActivity extends Activity
 		to_spinner.setOnItemSelectedListener(this);
 		to_spinner.setSelection(0);
 
-		// Initialize callback for the numberic input field
+		// Initialize callback for the numeric input field
 		EditText edit_text = (EditText)findViewById(R.id.currency_converter_edit_text);
 		edit_text.addTextChangedListener(this);
 
@@ -162,6 +162,22 @@ public class CurrencyConverterActivity extends Activity
 			}
 			editor.commit();
 		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		savedInstanceState.putDouble("cur_amount", cur_amount);
+		savedInstanceState.putBoolean("cur_amount_valid", cur_amount_valid);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		cur_amount = savedInstanceState.getDouble("cur_amount");
+		cur_amount_valid = savedInstanceState.getBoolean("cur_amount_valid");
+		if (cur_amount_valid)
+			maybe_do_conversion();
 	}
 
 	// Make the spinners show some important currencies at the very top of the
