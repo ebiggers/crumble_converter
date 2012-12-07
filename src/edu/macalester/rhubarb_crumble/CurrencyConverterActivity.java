@@ -238,7 +238,7 @@ public class CurrencyConverterActivity extends Activity
 		} else if (seconds < SECONDS_PER_HOUR) {
 			amount = seconds / SECONDS_PER_MINUTE;
 			unit = "minute";
-			abbrev = "sec.";
+			abbrev = "min.";
 		} else if (seconds < SECONDS_PER_DAY) {
 			amount = seconds / SECONDS_PER_HOUR;
 			unit = "hour";
