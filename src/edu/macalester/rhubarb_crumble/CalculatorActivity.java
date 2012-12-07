@@ -59,6 +59,34 @@ public class CalculatorActivity extends Activity
 		clear_calculator();
 	}
 
+	// Save the calculator state
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		savedInstanceState.putString("display", displayView.getText().toString());
+		savedInstanceState.putInt("op", op);
+		savedInstanceState.putString("num1", num1);
+		savedInstanceState.putString("num2", num2);
+		savedInstanceState.putBoolean("num1_valid", num1_valid);
+	}
+
+	// Restore the calculator state
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		op = savedInstanceState.getInt("op", OP_NONE);
+		num1 = savedInstanceState.getString("num1");
+		if (num1 == null)
+			num1 = "";
+		num2 = savedInstanceState.getString("num2");
+		if (num2 == null)
+			num2 = "";
+		num1_valid = savedInstanceState.getBoolean("num1_valid", false);
+		String display = savedInstanceState.getString("display");
+		if (display != null)
+			displayView.setText(display);
+	}
+
 	// Reset the calculator to its initial state.
 	private void clear_calculator() {
 		num1 = "";
